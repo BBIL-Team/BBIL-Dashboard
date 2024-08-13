@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Task Form</title>
+</head>
+<body>
+    <h2>Add Employee Task</h2>
+       <form action="https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3" method="POST" enctype="application/x-www-form-urlencoded">
+        <label for="employeeName">Employee Name:</label><br>
+        <input type="text" id="employeeName" name="employeeName"><br><br>
+        
+        <label for="taskDescription">Task Description:</label><br>
+        <input type="text" id="taskDescription" name="taskDescription"><br><br>
+        
+        <label for="startDate">Start Date:</label><br>
+        <input type="date" id="startDate" name="startDate"><br><br>
+        
+        <label for="endDate">End Date:</label><br>
+        <input type="date" id="endDate" name="endDate"><br><br>
+        
+        <label for="remarks">Remarks:</label><br>
+        <input type="text" id="remarks" name="remarks"><br><br>
+        
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
