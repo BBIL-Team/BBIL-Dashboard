@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display CSV from S3</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+    </style>
+</head>
+<body onload="fetchCSVData()">
+    <h1>CSV Data</h1>
+    <table id="csvTable">
+        <thead>
+            <tr>
+                <th>Employee Name</th>
+                <th>Task Description</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody id="csvBody">
+            <!-- CSV Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchCSVData() {
+            try {
+                const response = await fetch(' https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const tableBody = document.getElementById('csvBody');
+
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5">No data found</td></tr>';
+                    return;
+                }
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.EmployeeName || 'N/A'}</td>
+                        <td>${row.TaskDescription || 'N/A'}</td>
+                        <td>${row.StartDate || 'N/A'}</td>
+                        <td>${row.EndDate || 'N/A'}</td>
+                        <td>${row.Remarks || 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('csvBody').innerHTML = '<tr><td colspan="5">Error fetching the CSV data</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>
