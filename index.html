@@ -3,52 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lambda API Call</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #response {
-            margin-top: 20px;
-            white-space: pre-wrap; /* Preserve whitespace and line breaks */
-            background-color: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <h1>Call AWS Lambda Endpoint</h1>
-    <button onclick="callLambda()">Call Lambda</button>
-    <div id="response"></div>
-
+    <title>Fetch Data from Lambda</title>
     <script>
-        function callLambda() {
-            const responseDiv = document.getElementById('response');
-            responseDiv.textContent = 'Loading...';
+        function onLoadFunction() {
+            console.log("Page has loaded.");
+            fetchDataFromLambda();
+        }
 
-            fetch('https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123')
-                .then(response => response.json())
+        function fetchDataFromLambda() {
+            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123'; // Replace with your endpoint URL
+
+            fetch(apiUrl)
+                .then(response => response.text())  // Use .text() to handle HTML response
                 .then(data => {
-                    responseDiv.textContent = JSON.stringify(data, null, 2); // Pretty-print JSON
+                    console.log("Fetched HTML data:", data);
+                    document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    responseDiv.textContent = 'An error occurred: ' + error.message;
+                    console.error('Error fetching data:', error);
+                    const container = document.getElementById('data-container');
+                    container.innerHTML = 'Failed to load data. Please check the console for details.';
                 });
         }
     </script>
+</head>
+<body onload="onLoadFunction()">
+    <h1>Fetch Data from Lambda</h1>
+    <div id="data-container">Loading data...</div> <!-- Container for displaying the fetched data -->
 </body>
 </html>
