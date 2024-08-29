@@ -11,7 +11,7 @@
         }
 
         function fetchDataFromLambda() {
-            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123'; // Replace with your endpoint URL
+            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
 
             fetch(apiUrl)
                 .then(response => response.text())  // Use .text() to handle HTML response
@@ -29,6 +29,5 @@
 </head>
 <body onload="onLoadFunction()">
     <h1>Fetch Data from Lambda</h1>
-    <div id="data-container">Loading data...</div> <!-- Container for displaying the fetched data -->
 </body>
 </html>
