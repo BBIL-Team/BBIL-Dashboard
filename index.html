@@ -61,7 +61,8 @@
         }
     </style>
 </head>
-<body onload="onLoadFunction()">
+
+    <body onload="onLoadFunction()">
     <h1>Fetch Data from Lambda</h1>
     <div id="data-container">Loading data...</div>
 
@@ -71,7 +72,7 @@
     <!-- Popup for adding tasks -->
     <div id="popup" class="popup">
         <h3>Add New Task</h3>
-        <form action="https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3" method="POST" enctype="application/x-www-form-urlencoded">
+        <form id="taskForm" action="https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3" method="POST" enctype="application/x-www-form-urlencoded">
             <label for="employeeName">Employee Name:</label>
             <input type="text" id="employeeName" name="eName" value="Ramita" required><br><br>
 
@@ -95,17 +96,15 @@
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
-
-        <!-- Success message popup -->
+    <!-- Success message popup -->
     <div id="messagePopup" class="popup">
         <p id="messageContent"></p>
         <button class="button" onclick="closeMessagePopup()">Close</button>
     </div>
 
-
     <script>
 
-        function onLoadFunction() {
+	function onLoadFunction() {
             console.log("Page has loaded.");
             fetchDataFromLambda();
         }
@@ -126,7 +125,7 @@
                 });
         }
 
-       function showPopup() {
+        function showPopup() {
             document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
@@ -169,7 +168,6 @@
                 document.getElementById('overlay').style.display = 'block';
             }
         };
-
     </script>
 </body>
 </html>
