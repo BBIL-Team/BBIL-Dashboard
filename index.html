@@ -125,9 +125,9 @@
 
         function populateTable(data) {
             const tableBody = document.getElementById('data-container');
-            const taskTableBody = document.getElementById('taskTableBody');
+            const taskTableBody = tableBody.querySelector('table') ? tableBody.querySelector('table tbody') : document.createElement('tbody');
             tableBody.innerHTML = ''; // Clear previous content
-            taskTableBody.innerHTML = ''; // Clear task table
+            tableBody.appendChild(taskTableBody); // Ensure the table body is in the container
 
             data.forEach((task, index) => {
                 const rowId = index + 1;
@@ -146,7 +146,7 @@
         }
 
         function showPopup() {
-            const taskTableBody = document.getElementById('taskTableBody');
+            const taskTableBody = document.querySelector('#data-container table tbody');
             const taskList = document.getElementById('taskList');
             taskList.innerHTML = ''; // Clear any existing tasks
 
@@ -184,7 +184,7 @@
 
         function removeTask(id) {
             // Find the row with the given ID and remove it from the table
-            const row = document.querySelector(`#taskTableBody tr[data-id="${id}"]`);
+            const row = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
             if (row) {
                 row.remove();
             }
