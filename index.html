@@ -103,8 +103,7 @@
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
     <script>
-        
-	function onLoadFunction() {
+        function onLoadFunction() {
             console.log("Page has loaded.");
             fetchDataFromLambda();
         }
@@ -117,35 +116,23 @@
                 .then(data => {
                     console.log("Fetched HTML data:", data);
                     document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
+                    populateTable();  // Populate the main table
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    const container = document.getElementById('data-container');
-                    container.innerHTML = 'Failed to load data. Please check the console for details.';
+                    document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
                 });
         }
 
-
-
-        function populateTable(data) {
-            const tableBody = document.getElementById('data-container');
-            const taskTableBody = tableBody.querySelector('table') ? tableBody.querySelector('table tbody') : document.createElement('tbody');
-            tableBody.innerHTML = ''; // Clear previous content
-            tableBody.appendChild(taskTableBody); // Ensure the table body is in the container
-
-            data.forEach((task, index) => {
+        function populateTable() {
+            const tableBody = document.querySelector('#data-container table tbody');
+            if (!tableBody) return;
+            
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
                 const rowId = index + 1;
-                const rowHtml = `
-                    <tr data-id="${rowId}">
-                        <td>${task.employee}</td>
-                        <td>${task.task}</td>
-                        <td>${task.startDate}</td>
-                        <td>${task.endDate}</td>
-                        <td>${task.remarks}</td>
-                        <td><button class="button" onclick="editTask(${rowId})">Edit</button></td>
-                    </tr>
-                `;
-                taskTableBody.insertAdjacentHTML('beforeend', rowHtml);
+                row.setAttribute('data-id', rowId);
+                row.querySelector('button').setAttribute('onclick', `editTask(${rowId})`);
             });
         }
 
@@ -187,11 +174,18 @@
         }
 
         function removeTask(id) {
-            // Find the row with the given ID and remove it from the table
-            const row = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
-            if (row) {
-                row.remove();
+            // Remove the task from the popup table
+            const popupRow = document.querySelector(`#taskList tr[data-id="${id}"]`);
+            if (popupRow) {
+                popupRow.remove();
             }
+
+            // Remove the task from the main table
+            const mainRow = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
+            if (mainRow) {
+                mainRow.remove();
+            }
+
             closePopup(); // Close the popup after removing the task
         }
     </script>
