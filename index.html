@@ -108,20 +108,38 @@
             fetchDataFromLambda();
         }
 
-        function fetchDataFromLambda() {
-            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
+       function fetchDataFromLambda() {
+    const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
 
-            fetch(apiUrl)
-                .then(response => response.json())  // Use .json() for JSON response
-                .then(data => {
-                    console.log("Fetched data:", data);
-                    populateTable(data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
-                });
-        }
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();  // Use .text() to get the raw response
+        })
+        .then(data => {
+            console.log("Fetched data:", data);
+            // If data is HTML, show it or log it
+            if (data.startsWith('<html>')) {
+                document.getElementById('data-container').innerHTML = 'Received HTML instead of JSON. Check console for details.';
+                console.error('Received HTML response:', data);
+            } else {
+                try {
+                    const jsonData = JSON.parse(data);  // Try parsing the response as JSON
+                    populateTable(jsonData);
+                } catch (error) {
+                    console.error('Failed to parse JSON:', error);
+                    document.getElementById('data-container').innerHTML = 'Failed to parse data. Please check the console for details.';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
+        });
+}
+
 
         function populateTable(data) {
             const tableBody = document.getElementById('data-container');
