@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Tasks</title>
+    <title>Task Manager</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +33,6 @@
         .button:hover {
             background-color: #45a049;
         }
-        /* Popup styles */
         .popup {
             display: none;
             position: fixed;
@@ -45,6 +44,9 @@
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 1000;
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
         }
         .popup button {
             margin-top: 10px;
@@ -59,52 +61,49 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+        .remove-btn {
+            color: red;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
-
-    <body onload="onLoadFunction()">
+<body onload="onLoadFunction()">
     <h1>Fetch Data from Lambda</h1>
     <div id="data-container">Loading data...</div>
 
     <br>
-    <button class="button" onclick="showPopup()">Add Task</button>
+    <button class="button" onclick="showPopup()">Edit Task</button>
 
-    <!-- Popup for adding tasks -->
+    <!-- Popup for editing tasks -->
     <div id="popup" class="popup">
-        <h3>Add New Task</h3>
-        <form id="taskForm" action="https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3" method="POST" enctype="application/x-www-form-urlencoded">
-            <label for="employeeName">Employee Name:</label>
-            <input type="text" id="employeeName" name="eName" value="Ramita" required><br><br>
-
-            <label for="taskDescription">Task:</label>
-            <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
-
-            <label for="StartDate">Start Date:</label>
-            <input type="date" id="StartDate" name="StartDate"><br><br>
-
-            <label for="EndDate">End Date:</label>
-            <input type="date" id="EndDate" name="EndDate"><br><br>
-
-            <label for="Remarks">Remarks:</label>
-            <input type="text" id="Remarks" name="Remarks"><br><br>
-
-            <button class="button" type="submit">Add</button>
-            <button class="button" type="button" onclick="closePopup()">Cancel</button>
-        </form>
+        <h3>Edit Tasks</h3>
+        <table id="popupTable">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Task</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Remarks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="taskList">
+                <!-- Task list will be dynamically inserted here -->
+            </tbody>
+        </table>
+        <button class="button" onclick="closePopup()">Close</button>
     </div>
 
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
-    <!-- Success message popup -->
-    <div id="messagePopup" class="popup">
-        <p id="messageContent"></p>
-        <button class="button" onclick="closeMessagePopup()">Close</button>
-    </div>
-
     <script>
-
-	function onLoadFunction() {
+        function onLoadFunction() {
             console.log("Page has loaded.");
             fetchDataFromLambda();
         }
@@ -113,19 +112,67 @@
             const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
 
             fetch(apiUrl)
-                .then(response => response.text())  // Use .text() to handle HTML response
+                .then(response => response.json())  // Use .json() for JSON response
                 .then(data => {
-                    console.log("Fetched HTML data:", data);
-                    document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
+                    console.log("Fetched data:", data);
+                    populateTable(data);
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    const container = document.getElementById('data-container');
-                    container.innerHTML = 'Failed to load data. Please check the console for details.';
+                    document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
                 });
         }
 
+        function populateTable(data) {
+            const tableBody = document.getElementById('data-container');
+            const taskTableBody = document.getElementById('taskTableBody');
+            tableBody.innerHTML = ''; // Clear previous content
+            taskTableBody.innerHTML = ''; // Clear task table
+
+            data.forEach((task, index) => {
+                const rowId = index + 1;
+                const rowHtml = `
+                    <tr data-id="${rowId}">
+                        <td>${task.employee}</td>
+                        <td>${task.task}</td>
+                        <td>${task.startDate}</td>
+                        <td>${task.endDate}</td>
+                        <td>${task.remarks}</td>
+                        <td><button class="button" onclick="editTask(${rowId})">Edit</button></td>
+                    </tr>
+                `;
+                taskTableBody.insertAdjacentHTML('beforeend', rowHtml);
+            });
+        }
+
         function showPopup() {
+            const taskTableBody = document.getElementById('taskTableBody');
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = ''; // Clear any existing tasks
+
+            // Generate the task list for the popup
+            const rows = taskTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const employee = row.cells[0].innerText;
+                const task = row.cells[1].innerText;
+                const startDate = row.cells[2].innerText;
+                const endDate = row.cells[3].innerText;
+                const remarks = row.cells[4].innerText;
+                const id = row.getAttribute('data-id');
+                
+                const taskHtml = `
+                    <tr>
+                        <td>${employee}</td>
+                        <td>${task}</td>
+                        <td>${startDate}</td>
+                        <td>${endDate}</td>
+                        <td>${remarks}</td>
+                        <td><button class="remove-btn" onclick="removeTask(${id})">&times;</button></td>
+                    </tr>
+                `;
+                taskList.insertAdjacentHTML('beforeend', taskHtml);
+            });
+
             document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
@@ -135,39 +182,14 @@
             document.getElementById('overlay').style.display = 'none';
         }
 
-        function closeMessagePopup() {
-            document.getElementById('messagePopup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        document.getElementById('taskForm').onsubmit = async function(event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            const form = event.target;
-            const formData = new FormData(form);
-            const params = new URLSearchParams(formData).toString();
-
-            try {
-                const response = await fetch(form.action, {
-                    method: form.method,
-                    headers: {
-                        'Content-Type': form.enctype
-                    },
-                    body: params
-                });
-
-                const result = await response.json();
-                document.getElementById('messageContent').innerText = result.message;
-                document.getElementById('messagePopup').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-
-                closePopup(); // Close the add task popup
-            } catch (error) {
-                document.getElementById('messageContent').innerText = 'Error: ' + error.message;
-                document.getElementById('messagePopup').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
+        function removeTask(id) {
+            // Find the row with the given ID and remove it from the table
+            const row = document.querySelector(`#taskTableBody tr[data-id="${id}"]`);
+            if (row) {
+                row.remove();
             }
-        };
+            closePopup(); // Close the popup after removing the task
+        }
     </script>
 </body>
 </html>
