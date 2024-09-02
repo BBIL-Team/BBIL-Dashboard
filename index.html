@@ -108,33 +108,42 @@
             fetchDataFromLambda();
         }
 
-        function fetchDataFromLambda() {
-            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
+      function fetchDataFromLambda() {
+    const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
 
-            fetch(apiUrl)
-                .then(response => response.text())  // Use .text() to handle HTML response
-                .then(data => {
-                    console.log("Fetched HTML data:", data);
-                    document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
-                    populateTable();  // Populate the main table
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
-                });
-        }
+    fetch(apiUrl)
+        .then(response => response.text())  // Use .text() to handle HTML response
+        .then(data => {
+            console.log("Fetched HTML data:", data);
+            document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
+            populateTable();  // Populate the main table after inserting data
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
+        });
+}
 
-        function populateTable() {
-            const tableBody = document.querySelector('#data-container table tbody');
-            if (!tableBody) return;
-            
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach((row, index) => {
-                const rowId = index + 1;
-                row.setAttribute('data-id', rowId);
-                row.querySelector('button').setAttribute('onclick', `editTask(${rowId})`);
-            });
+
+       function populateTable() {
+    const tableBody = document.querySelector('#data-container table tbody');
+    
+    if (!tableBody) {
+        console.error("Table body not found");
+        return; // Exit the function if table body is not found
+    }
+
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const rowId = index + 1;
+        row.setAttribute('data-id', rowId);
+        const editButton = row.querySelector('button');
+        if (editButton) {
+            editButton.setAttribute('onclick', `editTask(${rowId})`);
         }
+    });
+}
+
 
         function showPopup() {
             const taskTableBody = document.querySelector('#data-container table tbody');
