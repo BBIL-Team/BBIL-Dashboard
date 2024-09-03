@@ -72,13 +72,12 @@
     </style>
 </head>
 <body onload="onLoadFunction()">
-    <h1>Employee Task List</h1>
+    <h1>Fetch Data from Lambda</h1>
     <div id="data-container">Loading data...</div>
 
     <br>
     <button class="button" onclick="showPopup()">Edit Task</button>
 
-    <!-- Popup for editing tasks -->
     <div id="popup" class="popup">
         <h3>Edit Tasks</h3>
         <table id="popupTable">
@@ -99,7 +98,6 @@
         <button class="button" onclick="closePopup()">Close</button>
     </div>
 
-    <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
     <script>
@@ -108,49 +106,42 @@
             fetchDataFromLambda();
         }
 
-      function fetchDataFromLambda() {
-    const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
-
-    fetch(apiUrl)
-        .then(response => response.text())  // Use .text() to handle HTML response
-        .then(data => {
-            console.log("Fetched HTML data:", data);
-            document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
-            populateTable();  // Populate the main table after inserting data
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
-        });
-}
-
-
-       function populateTable() {
-    const tableBody = document.querySelector('#data-container table tbody');
-    
-    if (!tableBody) {
-        console.error("Table body not found");
-        return; // Exit the function if table body is not found
-    }
-
-    const rows = tableBody.querySelectorAll('tr');
-    rows.forEach((row, index) => {
-        const rowId = index + 1;
-        row.setAttribute('data-id', rowId);
-        const editButton = row.querySelector('button');
-        if (editButton) {
-            editButton.setAttribute('onclick', `editTask(${rowId})`);
+        function fetchDataFromLambda() {
+            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
+            fetch(apiUrl)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('data-container').innerHTML = data;
+                    populateTable();
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
+                });
         }
-    });
-}
 
+        function populateTable() {
+            const tableBody = document.querySelector('#data-container table tbody');
+            if (!tableBody) {
+                console.error("Table body not found");
+                return;
+            }
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                const rowId = index + 1;
+                row.setAttribute('data-id', rowId);
+                const editButton = row.querySelector('button');
+                if (editButton) {
+                    editButton.setAttribute('onclick', `editTask(${rowId})`);
+                }
+            });
+        }
 
         function showPopup() {
             const taskTableBody = document.querySelector('#data-container table tbody');
             const taskList = document.getElementById('taskList');
-            taskList.innerHTML = ''; // Clear any existing tasks
+            taskList.innerHTML = '';
 
-            // Generate the task list for the popup
             const rows = taskTableBody.querySelectorAll('tr');
             rows.forEach(row => {
                 const employee = row.cells[0].innerText;
@@ -161,7 +152,7 @@
                 const id = row.getAttribute('data-id');
                 
                 const taskHtml = `
-                    <tr>
+                    <tr data-id="${id}">
                         <td>${employee}</td>
                         <td>${task}</td>
                         <td>${startDate}</td>
@@ -183,19 +174,38 @@
         }
 
         function removeTask(id) {
-            // Remove the task from the popup table
-            const popupRow = document.querySelector(`#taskList tr[data-id="${id}"]`);
-            if (popupRow) {
-                popupRow.remove();
-            }
-
-            // Remove the task from the main table
             const mainRow = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
-            if (mainRow) {
-                mainRow.remove();
-            }
+            if (!mainRow) return;
 
-            closePopup(); // Close the popup after removing the task
+            const taskDetails = {
+                employee: mainRow.cells[0].innerText,
+                task: mainRow.cells[1].innerText,
+                startDate: mainRow.cells[2].innerText,
+                endDate: mainRow.cells[3].innerText,
+                remarks: mainRow.cells[4].innerText
+            };
+
+            const apiUrl = 'https://c9tmoc2s08.execute-api.ap-south-1.amazonaws.com/default/Test4RT';
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(taskDetails)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mainRow.remove(); // Remove the row from the main table if successful
+                    document.querySelector(`#taskList tr[data-id="${id}"]`).remove(); // Remove from popup
+                } else {
+                    alert('Failed to remove task.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         }
     </script>
 </body>
