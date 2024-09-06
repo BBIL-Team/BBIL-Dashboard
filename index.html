@@ -175,40 +175,39 @@
             document.getElementById('overlay').style.display = 'none';
         }
 
-        function removeTask(id) {
-            const mainRow = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
-            if (!mainRow) return;
+      function removeTask(id) {
+    const mainRow = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
+    if (!mainRow) return;
 
-            const taskDetails = {
-                employee: mainRow.cells[0].innerText,
-                task: mainRow.cells[1].innerText,
-                startDate: mainRow.cells[2].innerText,
-                endDate: mainRow.cells[3].innerText,
-                remarks: mainRow.cells[4].innerText
-            };
+    const taskDetails = {
+        employee: mainRow.cells[0].innerText,
+        task: mainRow.cells[1].innerText,
+        startDate: mainRow.cells[2].innerText,
+        endDate: mainRow.cells[3].innerText,
+        remarks: mainRow.cells[4].innerText
+    };
 
-            const apiUrl = 'https://1yowx334wb.execute-api.ap-south-1.amazonaws.com/A1/Test4R';
+    const apiUrl = 'https://1yowx334wb.execute-api.ap-south-1.amazonaws.com/A1/Test4R';
 
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(taskDetails)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    mainRow.remove(); // Remove the row from the main table if successful
-                    document.querySelector(`#taskList tr[data-id="${id}"]`).remove(); // Remove from popup
-                } else {
-                    alert('Failed to remove task.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
+    fetch(apiUrl, {
+        method: 'POST',
+        mode: 'no-cors',  // Adding no-cors mode
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(taskDetails)
+    })
+    .then(response => {
+        // Since 'no-cors' mode is enabled, you won't be able to check or read the response.
+        alert('Request sent to server. Task will be removed if server responds successfully.');
+        console.log(response);  // This won't contain the full response details.
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to remove task.');
+    });
+}
+
     </script>
 </body>
 </html>
