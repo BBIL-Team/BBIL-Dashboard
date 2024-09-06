@@ -174,39 +174,44 @@
         }
 
         function removeTask(id) {
-            const mainRow = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
-            if (!mainRow) return;
+    const mainRow = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
+    if (!mainRow) return;
 
-            const taskDetails = {
-                employee: mainRow.cells[0].innerText,
-                task: mainRow.cells[1].innerText,
-                startDate: mainRow.cells[2].innerText,
-                endDate: mainRow.cells[3].innerText,
-                remarks: mainRow.cells[4].innerText
-            };
+    const taskDetails = {
+        employee: mainRow.cells[0].innerText,
+        task: mainRow.cells[1].innerText,
+        startDate: mainRow.cells[2].innerText,
+        endDate: mainRow.cells[3].innerText,
+        remarks: mainRow.cells[4].innerText
+    };
 
-            const apiUrl = 'https://eujo3ulg06.execute-api.ap-south-1.amazonaws.com/default/Test4RT';
+    console.log("Sending task details to Lambda:", taskDetails); // Debugging log
 
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(taskDetails)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    mainRow.remove(); // Remove the row from the main table if successful
-                    document.querySelector(`#taskList tr[data-id="${id}"]`).remove(); // Remove from popup
-                } else {
-                    alert('Failed to remove task.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+    const apiUrl = 'https://eujo3ulg06.execute-api.ap-south-1.amazonaws.com/default/Test4RT';
+
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(taskDetails)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Response from Lambda:", data); // Debugging log
+        if (data.success) {
+            mainRow.remove(); // Remove the row from the main table if successful
+            document.querySelector(`#taskList tr[data-id="${id}"]`).remove(); // Remove from popup
+        } else {
+            alert('Failed to remove task.');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while removing the task.');
+    });
+}
+
     </script>
 </body>
 </html>
