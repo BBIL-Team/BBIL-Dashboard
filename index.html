@@ -120,10 +120,6 @@
                 console.error("Table body not found");
                 return;
             }
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                const id = taskIdCounter++;
-                row.setAttribute('data-id', id);
                 const editButton = row.querySelector('button');
                 if (editButton) {
                     editButton.setAttribute('onclick', `editTask(${id})`);
