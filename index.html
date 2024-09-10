@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
+    <title>Employee Tasks</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,9 +44,6 @@
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            max-width: 80%;
-            max-height: 80%;
-            overflow-y: auto;
         }
         .popup button {
             margin-top: 10px;
@@ -61,153 +58,102 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
-        .remove-btn {
-            color: red;
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        .close-button {
+            background: red;
+            color: white;
             border: none;
-            background: none;
             cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
+            padding: 5px 10px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
     </style>
 </head>
-<body onload="onLoadFunction()">
-    <h1>Employee Task List</h1>
+<body>
+    <h1>Employee Tasks</h1>
     <div id="data-container">Loading data...</div>
 
     <br>
-    <button class="button" onclick="showPopup()">Edit Task</button>
+    <button class="button" onclick="showRemoveTaskPopup()">Remove Task</button>
 
-    <div id="popup" class="popup">
-        <h3>Edit Tasks</h3>
-        <table id="popupTable">
-            <thead>
-                <tr>
-                    <th>Employee</th>
-                    <th>Task</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Remarks</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="taskList">
-                <!-- Task list will be dynamically inserted here -->
-            </tbody>
-        </table>
-        <button class="button" onclick="closePopup()">Close</button>
+    <!-- Popup for removing tasks -->
+    <div id="removeTaskPopup" class="popup">
+        <button class="close-button" onclick="closeRemoveTaskPopup()">×</button>
+        <h3>Remove Task</h3>
+        <select id="taskSelect">
+            <option value="">Loading tasks...</option>
+        </select><br>
+        <button class="button" onclick="removeTask()">Remove</button>
+        <button class="button" onclick="closeRemoveTaskPopup()">Cancel</button>
     </div>
 
-    <div id="overlay" class="overlay" onclick="closePopup()"></div>
+    <!-- Overlay for popup -->
+    <div id="overlay" class="overlay" onclick="closeRemoveTaskPopup()"></div>
 
     <script>
-        let taskIdCounter = 1; // Initialize task ID counter
-
         function onLoadFunction() {
-            console.log("Page has loaded.");
             fetchDataFromLambda();
         }
 
         function fetchDataFromLambda() {
-            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
+            const apiUrl = 'https://your-api-url.com/get-tasks'; // Replace with your API to fetch tasks
+
             fetch(apiUrl)
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(data => {
-                    document.getElementById('data-container').innerHTML = data;
-                    populateTable();
+                    const select = document.getElementById('taskSelect');
+                    select.innerHTML = '<option value="">Select a task</option>';
+                    data.tasks.forEach(task => {
+                        const option = document.createElement('option');
+                        option.value = task.id; // Assuming each task has an 'id' field
+                        option.textContent = task.description; // Assuming each task has a 'description' field
+                        select.appendChild(option);
+                    });
                 })
                 .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
+                    console.error('Error fetching tasks:', error);
+                    document.getElementById('taskSelect').innerHTML = '<option value="">Failed to load tasks</option>';
                 });
         }
 
-        function populateTable() {
-            const tableBody = document.querySelector('#data-container table tbody');
-            if (!tableBody) {
-                console.error("Table body not found");
-                return;
-            }
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                const id = taskIdCounter++;
-                row.setAttribute('data-id', id);
-                const editButton = row.querySelector('button');
-                if (editButton) {
-                    editButton.setAttribute('onclick', `editTask(${id})`);
-                }
-            });
-        }
-
-        function showPopup() {
-            const taskTableBody = document.querySelector('#data-container table tbody');
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = '';
-
-            const rows = taskTableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                const employee = row.cells[0].innerText;
-                const task = row.cells[1].innerText;
-                const startDate = row.cells[2].innerText;
-                const endDate = row.cells[3].innerText;
-                const remarks = row.cells[4].innerText;
-                const id = row.getAttribute('data-id');
-                
-                const taskHtml = `
-                    <tr data-id="${id}">
-                        <td>${employee}</td>
-                        <td>${task}</td>
-                        <td>${startDate}</td>
-                        <td>${endDate}</td>
-                        <td>${remarks}</td>
-                        <td><button class="remove-btn" onclick="removeTask(${id})">&times;</button></td>
-                    </tr>
-                `;
-                taskList.insertAdjacentHTML('beforeend', taskHtml);
-            });
-
-            document.getElementById('popup').style.display = 'block';
+        function showRemoveTaskPopup() {
+            fetchDataFromLambda();
+            document.getElementById('removeTaskPopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
+        function closeRemoveTaskPopup() {
+            document.getElementById('removeTaskPopup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
 
-      function removeTask(id) {
-    const mainRow = document.querySelector(`#data-container table tbody tr[data-id="${id}"]`);
-    if (!mainRow) return;
+        function removeTask() {
+            const taskId = document.getElementById('taskSelect').value;
+            if (!taskId) {
+                alert('Please select a task to remove.');
+                return;
+            }
 
-    const taskDetails = {
-        employee: mainRow.cells[0].innerText,
-        task: mainRow.cells[1].innerText,
-        startDate: mainRow.cells[2].innerText,
-        endDate: mainRow.cells[3].innerText,
-        remarks: mainRow.cells[4].innerText
-    };
+            const apiUrl = `https://your-api-url.com/remove-task/${taskId}`; // Replace with your Lambda URL
 
-    const apiUrl = 'https://1yowx334wb.execute-api.ap-south-1.amazonaws.com/A1/Test4R';
-
-    fetch(apiUrl, {
-        method: 'POST',
-        mode: 'no-cors',  // Adding no-cors mode
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(taskDetails)
-    })
-    .then(response => {
-        // Since 'no-cors' mode is enabled, you won't be able to check or read the response.
-        alert('Request sent to server. Task will be removed if server responds successfully.');
-        console.log(response);  // This won't contain the full response details.
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to remove task.');
-    });
-}
-
+            fetch(apiUrl, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(result => {
+                    alert(result.message || 'Task removed successfully.');
+                    closeRemoveTaskPopup();
+                    fetchDataFromLambda(); // Refresh the task list
+                })
+                .catch(error => {
+                    console.error('Error removing task:', error);
+                    alert('Error: ' + error.message);
+                });
+        }
     </script>
 </body>
 </html>
