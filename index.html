@@ -101,24 +101,17 @@
             fetchDataFromLambda();
         }
 
-        function fetchDataFromLambda() {
-            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123'; // Replace with your API to fetch tasks
-
+       function fetchDataFromLambda() {
+            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
             fetch(apiUrl)
-                .then(response => response.json())
+                .then(response => response.text())
                 .then(data => {
-                    const select = document.getElementById('taskSelect');
-                    select.innerHTML = '<option value="">Select a task</option>';
-                    data.tasks.forEach(task => {
-                        const option = document.createElement('option');
-                        option.value = task.id; // Assuming each task has an 'id' field
-                        option.textContent = task.description; // Assuming each task has a 'description' field
-                        select.appendChild(option);
-                    });
+                    document.getElementById('data-container').innerHTML = data;
+                    populateTable();
                 })
                 .catch(error => {
-                    console.error('Error fetching tasks:', error);
-                    document.getElementById('taskSelect').innerHTML = '<option value="">Failed to load tasks</option>';
+                    console.error('Error fetching data:', error);
+                    document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
                 });
         }
 
