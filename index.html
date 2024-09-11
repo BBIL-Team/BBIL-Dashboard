@@ -1,164 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Tasks</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        .button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ccc;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        .popup button {
-            margin-top: 10px;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-        select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-        }
-        .close-button {
-            background: red;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Employee Tasks</h1>
-    <div id="data-container">Loading data...</div>
-
-    <br>
-    <button class="button" onclick="showRemoveTaskPopup()">Remove Task</button>
-
-    <!-- Popup for removing tasks -->
-    <div id="removeTaskPopup" class="popup">
-        <button class="close-button" onclick="closeRemoveTaskPopup()">×</button>
-        <h3>Remove Task</h3>
-        <select id="taskSelect">
-            <option value="">Loading tasks...</option>
-        </select><br>
-        <button class="button" onclick="removeTask()">Remove</button>
-        <button class="button" onclick="closeRemoveTaskPopup()">Cancel</button>
-    </div>
-
-    <!-- Overlay for popup -->
-    <div id="overlay" class="overlay" onclick="closeRemoveTaskPopup()"></div>
-
+    <title>Fetch Data from Lambda</title>
     <script>
         function onLoadFunction() {
+            console.log("Page has loaded.");
             fetchDataFromLambda();
         }
 
-       function fetchDataFromLambda() {
+        function fetchDataFromLambda() {
             const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
+
             fetch(apiUrl)
-                .then(response => response.text())
+                .then(response => response.text())  // Use .text() to handle HTML response
                 .then(data => {
-                    document.getElementById('data-container').innerHTML = data;
-                    populateTable();
+                    console.log("Fetched HTML data:", data);
+                    document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    document.getElementById('data-container').innerHTML = 'Failed to load data. Please check the console for details.';
-                });
-        }
-        function populateTable() {
-            const tableBody = document.querySelector('#data-container table tbody');
-            if (!tableBody) {
-                console.error("Table body not found");
-                return;
-            }
-                const editButton = row.querySelector('button');
-                if (editButton) {
-                    editButton.setAttribute('onclick', `editTask(${id})`);
-                }
-            });
-        }
-
-        function showRemoveTaskPopup() {
-            fetchDataFromLambda();
-            document.getElementById('removeTaskPopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
-
-        function closeRemoveTaskPopup() {
-            document.getElementById('removeTaskPopup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        function removeTask() {
-            const taskId = document.getElementById('taskSelect').value;
-            if (!taskId) {
-                alert('Please select a task to remove.');
-                return;
-            }
-
-            const apiUrl = `https://your-api-url.com/remove-task/${taskId}`; // Replace with your Lambda URL
-
-            fetch(apiUrl, { method: 'DELETE' })
-                .then(response => response.json())
-                .then(result => {
-                    alert(result.message || 'Task removed successfully.');
-                    closeRemoveTaskPopup();
-                    fetchDataFromLambda(); // Refresh the task list
-                })
-                .catch(error => {
-                    console.error('Error removing task:', error);
-                    alert('Error: ' + error.message);
+                    const container = document.getElementById('data-container');
+                    container.innerHTML = 'Failed to load data. Please check the console for details.';
                 });
         }
     </script>
+</head>
+<body onload="onLoadFunction()">
+    <h1>Fetch Data from Lambda</h1>
+    <div id="data-container">Loading data...</div>
 </body>
 </html>
