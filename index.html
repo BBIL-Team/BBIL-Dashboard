@@ -139,16 +139,6 @@
                 const endDate = row.cells[3].innerText;
                 const remarks = row.cells[4].innerText;
 
-                // Create a new row for the popup table
-                const taskHtml = `
-                    <tr>
-                        <td>${employeeName}</td>
-                        <td>${taskDescription}</td>
-                        <td>${startDate}</td>
-                        <td>${endDate}</td>
-                        <td>${remarks}</td>
-                    </tr>
-                `;
                 popupTaskList.insertAdjacentHTML('beforeend', taskHtml);
             });
         }
