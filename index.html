@@ -153,16 +153,32 @@
             document.getElementById('overlay').style.display = 'none';
         }
 
-        // Function to remove a task (send a request to Lambda or handle it locally)
-        function removeTask(rowIndex) {
-            console.log(`Removing task from row ${rowIndex}`);
+       function removeTask(taskDescription) {
+            const apiUrl = 'https://your-api-endpoint'; // Replace with your Lambda API Gateway URL
 
-            // Logic to remove the task (e.g., send a request to your Lambda function)
-            // You can send the task info (such as task description) to the Lambda function to remove it
-
-            // Optionally, remove the row from the popup table (for demonstration purposes)
-            const popupTable = document.querySelector('#popupTableContainer table');
-            popupTable.deleteRow(rowIndex);
+            fetch(apiUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    taskDescription: taskDescription
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Task removed successfully');
+                    // Refresh the table or update the UI accordingly
+                    fetchDataFromLambda();
+                    closePopup();
+                } else {
+                    alert('Error removing task');
+                }
+            })
+            .catch(error => {
+                console.error('Error removing task:', error);
+            });
         }
     </script>
 </body>
