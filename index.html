@@ -59,20 +59,11 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
-        .remove-button {
-            background-color: red;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .remove-button:hover {
-            background-color: darkred;
-        }
     </style>
 </head>
 
 <body onload="onLoadFunction()">
-    <h1>Fetch Data from Lambda</h1>
+    <h1>Employee Tasks</h1>
     <div id="data-container">Loading data...</div>
 
     <br>
@@ -81,7 +72,22 @@
     <!-- Popup for removing tasks -->
     <div id="popup" class="popup">
         <h3>Remove Task</h3>
-        <div id="popupTableContainer"></div>
+        <table id="popupTable">
+            <thead>
+                <tr>
+                    <th>Row Number</th>
+                    <th>Employee Name</th>
+                    <th>Task Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Remarks</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody id="popupTaskList">
+                <!-- Tasks will be populated here -->
+            </tbody>
+        </table>
         <button class="button" onclick="closePopup()">Close</button>
     </div>
 
@@ -89,73 +95,70 @@
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
     <script>
+
+        // Fetch data from Lambda and populate the table
         function onLoadFunction() {
             console.log("Page has loaded.");
             fetchDataFromLambda();
         }
 
+        // Fetch the data from Lambda endpoint
         function fetchDataFromLambda() {
-            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
+            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';  
 
             fetch(apiUrl)
-                .then(response => response.text())  // Use .text() to handle HTML response
+                .then(response => response.text())
                 .then(data => {
-                    console.log("Fetched HTML data:", data);
-                    document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
+                    document.getElementById('data-container').innerHTML = data;
+                    populatePopupTable();
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    const container = document.getElementById('data-container');
-                    container.innerHTML = 'Failed to load data. Please check the console for details.';
+                    document.getElementById('data-container').innerHTML = 'Failed to load data.';
                 });
         }
 
-        function showPopup() {
-            // Get the main table and add remove buttons
-            const tableHtml = document.getElementById('data-container').innerHTML;
+        // Populate the popup with tasks and a remove button for each task
+        function populatePopupTable() {
+            const tableBody = document.querySelector('#data-container table tbody');
+            const popupTaskList = document.getElementById('popupTaskList');
 
-            // Create a temporary DOM element to add the remove buttons
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = tableHtml;
+            if (!tableBody) {
+                console.error('Table body not found.');
+                return;
+            }
 
-            const rows = tempDiv.querySelectorAll('tr');
+            // Clear the popup task list before populating
+            popupTaskList.innerHTML = '';
 
-            // Loop through each row and append a remove button at the end
+            // Copy rows from the main table to the popup
+            const rows = tableBody.querySelectorAll('tr');
             rows.forEach((row, index) => {
-                if (index === 0) {
-                    // Add a "Remove" header in the first row (header row)
-                    const headerCell = document.createElement('th');
-                    headerCell.innerText = "Remove";
-                    row.appendChild(headerCell);
-                } else {
-                    // Add a remove button to each task row
-                    const removeCell = document.createElement('td');
-                    const removeButton = document.createElement('button');
-                    removeButton.innerText = 'X';
-                    removeButton.classList.add('remove-button');
-                    removeButton.onclick = function() {
-                        removeTask(index);
-                    };
-                    removeCell.appendChild(removeButton);
-                    row.appendChild(removeCell);
-                }
+                const clonedRow = row.cloneNode(true);  // Clone the existing row from the main table
+                const removeButtonCell = document.createElement('td');
+                
+                removeButtonCell.innerHTML = `<button class="remove-button" onclick="removeTask(${index + 1})">X</button>`;
+                clonedRow.appendChild(removeButtonCell);  // Add the remove button to the cloned row
+                
+                popupTaskList.appendChild(clonedRow);  // Append the cloned row to the popup
             });
+        }
 
-            // Set the modified table HTML in the popup
-            document.getElementById('popupTableContainer').innerHTML = tempDiv.innerHTML;
-
+        // Show the popup
+        function showPopup() {
             document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
+        // Close the popup
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
 
-          // Remove a task by row number
+        // Remove a task by row number
         function removeTask(rowNumber) {
-            const apiUrl = ' https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
+            const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
 
             // Send the DELETE request to the Lambda function
             fetch(apiUrl, {
