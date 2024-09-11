@@ -59,6 +59,15 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+        .remove-button {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .remove-button:hover {
+            background-color: darkred;
+        }
     </style>
 </head>
 
@@ -102,9 +111,38 @@
         }
 
         function showPopup() {
-            // Copy the table from the main container into the popup
+            // Get the main table and add remove buttons
             const tableHtml = document.getElementById('data-container').innerHTML;
-            document.getElementById('popupTableContainer').innerHTML = tableHtml;
+
+            // Create a temporary DOM element to add the remove buttons
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = tableHtml;
+
+            const rows = tempDiv.querySelectorAll('tr');
+
+            // Loop through each row and append a remove button at the end
+            rows.forEach((row, index) => {
+                if (index === 0) {
+                    // Add a "Remove" header in the first row (header row)
+                    const headerCell = document.createElement('th');
+                    headerCell.innerText = "Remove";
+                    row.appendChild(headerCell);
+                } else {
+                    // Add a remove button to each task row
+                    const removeCell = document.createElement('td');
+                    const removeButton = document.createElement('button');
+                    removeButton.innerText = 'X';
+                    removeButton.classList.add('remove-button');
+                    removeButton.onclick = function() {
+                        removeTask(index);
+                    };
+                    removeCell.appendChild(removeButton);
+                    row.appendChild(removeCell);
+                }
+            });
+
+            // Set the modified table HTML in the popup
+            document.getElementById('popupTableContainer').innerHTML = tempDiv.innerHTML;
 
             document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
@@ -113,6 +151,18 @@
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Function to remove a task (send a request to Lambda or handle it locally)
+        function removeTask(rowIndex) {
+            console.log(`Removing task from row ${rowIndex}`);
+
+            // Logic to remove the task (e.g., send a request to your Lambda function)
+            // You can send the task info (such as task description) to the Lambda function to remove it
+
+            // Optionally, remove the row from the popup table (for demonstration purposes)
+            const popupTable = document.querySelector('#popupTableContainer table');
+            popupTable.deleteRow(rowIndex);
         }
     </script>
 </body>
