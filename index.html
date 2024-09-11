@@ -71,27 +71,24 @@
 
     <!-- Popup for adding tasks -->
     <div id="popup" class="popup">
-        <h3>Add New Task</h3>
-        <form id="taskForm" action="https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3" method="POST" enctype="application/x-www-form-urlencoded">
-            <label for="employeeName">Employee Name:</label>
-            <input type="text" id="employeeName" name="eName" value="Ramita" required><br><br>
-
-            <label for="taskDescription">Task:</label>
-            <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
-
-            <label for="StartDate">Start Date:</label>
-            <input type="date" id="StartDate" name="StartDate"><br><br>
-
-            <label for="EndDate">End Date:</label>
-            <input type="date" id="EndDate" name="EndDate"><br><br>
-
-            <label for="Remarks">Remarks:</label>
-            <input type="text" id="Remarks" name="Remarks"><br><br>
-
-            <button class="button" type="submit">Add</button>
-            <button class="button" type="button" onclick="closePopup()">Cancel</button>
-        </form>
-    </div>
+        <h3>Remove Task</h3>
+	<table id ="popupTable">
+		<thead>
+			<tr>
+				<th>Row Number</th>
+				<th>Employee Name</th>
+				<th>Task Description</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+				<th>Remarks</th>
+			</tr>
+		</thead>
+	<tbody id="popupTaskList">
+		<!----------- Tasks wil be populated here----->
+	</tbody>
+	</table>
+	    <button class="button" onclick="closePopup()">
+        </div>
 
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
