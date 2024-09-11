@@ -59,11 +59,20 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+        .remove-button {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .remove-button:hover {
+            background-color: darkred;
+        }
     </style>
 </head>
 
 <body onload="onLoadFunction()">
-    <h1>Employee Tasks</h1>
+    <h1>Fetch Data from Lambda</h1>
     <div id="data-container">Loading data...</div>
 
     <br>
@@ -72,22 +81,7 @@
     <!-- Popup for removing tasks -->
     <div id="popup" class="popup">
         <h3>Remove Task</h3>
-        <table id="popupTable">
-            <thead>
-                <tr>
-                    <th>Row Number</th>
-                    <th>Employee Name</th>
-                    <th>Task Description</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Remarks</th>
-                    <th>Remove</th>
-                </tr>
-            </thead>
-            <tbody id="popupTaskList">
-                <!-- Tasks will be populated here -->
-            </tbody>
-        </table>
+        <div id="popupTableContainer"></div>
         <button class="button" onclick="closePopup()">Close</button>
     </div>
 
@@ -95,74 +89,65 @@
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
     <script>
-
-        // Fetch data from Lambda and populate the table
         function onLoadFunction() {
             console.log("Page has loaded.");
             fetchDataFromLambda();
         }
 
-        // Fetch the data from Lambda endpoint
         function fetchDataFromLambda() {
-            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';  
+            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
 
             fetch(apiUrl)
-                .then(response => response.text())
+                .then(response => response.text())  // Use .text() to handle HTML response
                 .then(data => {
-                    document.getElementById('data-container').innerHTML = data;
-                    populatePopupTable();
+                    console.log("Fetched HTML data:", data);
+                    document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    document.getElementById('data-container').innerHTML = 'Failed to load data.';
+                    const container = document.getElementById('data-container');
+                    container.innerHTML = 'Failed to load data. Please check the console for details.';
                 });
         }
 
-        // Populate the popup with tasks and a remove button for each task
-        function populatePopupTable() {
-            const tableBody = document.querySelector('#data-container table tbody');
-            const popupTaskList = document.getElementById('popupTaskList');
-
-            if (!tableBody) {
-                console.error('Table body not found.');
-                return;
-            }
-
-            // Clear the popup task list before populating
-            popupTaskList.innerHTML = '';
-
-            // Iterate through each row in the table
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach((row, index) => {
-                const employeeName = row.cells[0].innerText;
-                const taskDescription = row.cells[1].innerText;
-                const startDate = row.cells[2].innerText;
-                const endDate = row.cells[3].innerText;
-                const remarks = row.cells[4].innerText;
-
-                const newRow = document.createElement('tr');
-
-                newRow.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${employeeName}</td>
-                    <td>${taskDescription}</td>
-                    <td>${startDate}</td>
-                    <td>${endDate}</td>
-                    <td>${remarks}</td>
-                    <td><button class="remove-button" onclick="removeTask(${index + 1})">X</button></td>
-                `;
-
-                popupTaskList.appendChild(newRow);
-            });
-        }
-
-        // Show the popup
         function showPopup() {
+            // Get the main table and add remove buttons
+            const tableHtml = document.getElementById('data-container').innerHTML;
+
+            // Create a temporary DOM element to add the remove buttons
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = tableHtml;
+
+            const rows = tempDiv.querySelectorAll('tr');
+
+            // Loop through each row and append a remove button at the end
+            rows.forEach((row, index) => {
+                if (index === 0) {
+                    // Add a "Remove" header in the first row (header row)
+                    const headerCell = document.createElement('th');
+                    headerCell.innerText = "Remove";
+                    row.appendChild(headerCell);
+                } else {
+                    // Add a remove button to each task row
+                    const removeCell = document.createElement('td');
+                    const removeButton = document.createElement('button');
+                    removeButton.innerText = 'X';
+                    removeButton.classList.add('remove-button');
+                    removeButton.onclick = function() {
+                        removeTask(index);
+                    };
+                    removeCell.appendChild(removeButton);
+                    row.appendChild(removeCell);
+                }
+            });
+
+            // Set the modified table HTML in the popup
+            document.getElementById('popupTableContainer').innerHTML = tempDiv.innerHTML;
+
             document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
-        // Close the popup
         function closePopup() {
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
