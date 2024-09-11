@@ -71,29 +71,15 @@
     <button class="button" onclick="showPopup()">Remove Task</button>
 
     <!-- Popup for removing tasks -->
-    <div id="popup" class="popup">
+    <<div id="popup" class="popup">
         <h3>Remove Task</h3>
-        <table id="popupTable">
-            <thead>
-                <tr>
-                    <th>Row Number</th>
-                    <th>Employee Name</th>
-                    <th>Task Description</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Remarks</th>
-                    <th>Remove</th>
-                </tr>
-            </thead>
-            <tbody id="popupTaskList">
-                <!-- Tasks will be populated here -->
-            </tbody>
-        </table>
+        <div id="popupTableContainer"></div>
         <button class="button" onclick="closePopup()">Close</button>
     </div>
 
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
+
 
     <script>
 
