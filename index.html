@@ -111,75 +111,62 @@
         }
 
         function showPopup() {
-            // Get the main table and add remove buttons
-            const tableHtml = document.getElementById('data-container').innerHTML;
+    const tableHtml = document.getElementById('data-container').innerHTML;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = tableHtml;
 
-            // Create a temporary DOM element to add the remove buttons
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = tableHtml;
-
-            const rows = tempDiv.querySelectorAll('tr');
-
-            // Loop through each row and append a remove button at the end
-            rows.forEach((row, index) => {
-                if (index === 0) {
-                    // Add a "Remove" header in the first row (header row)
-                    const headerCell = document.createElement('th');
-                    headerCell.innerText = "Remove";
-                    row.appendChild(headerCell);
-                } else {
-                    // Add a remove button to each task row
-                    const removeCell = document.createElement('td');
-                    const removeButton = document.createElement('button');
-                    removeButton.innerText = 'X';
-                    removeButton.classList.add('remove-button');
-                    removeButton.onclick = function() {
-                        removeTask(index);
-                    };
-                    removeCell.appendChild(removeButton);
-                    row.appendChild(removeCell);
-                }
-            });
-
-            // Set the modified table HTML in the popup
-            document.getElementById('popupTableContainer').innerHTML = tempDiv.innerHTML;
-
-            document.getElementById('popup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
+    const rows = tempDiv.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        if (index === 0) {
+            const headerCell = document.createElement('th');
+            headerCell.innerText = "Remove";
+            row.appendChild(headerCell);
+        } else {
+            const removeCell = document.createElement('td');
+            const removeButton = document.createElement('button');
+            removeButton.innerText = 'X';
+            removeButton.classList.add('remove-button');
+            removeButton.onclick = function() {
+                const rowNumber = index; // Index is 1-based, which matches the Lambda function logic
+                removeTask(rowNumber);
+            };
+            removeCell.appendChild(removeButton);
+            row.appendChild(removeCell);
         }
+    });
 
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
+    document.getElementById('popupTableContainer').innerHTML = tempDiv.innerHTML;
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+}
+
+function removeTask(rowNumber) {
+    const apiUrl = 'https://1yowx334wb.execute-api.ap-south-1.amazonaws.com/A1/Test4R'; // Replace with your Lambda API Gateway URL
+
+    fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            rowNumber: rowNumber
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Task removed successfully');
+            // Refresh the table or update the UI accordingly
+            fetchDataFromLambda();
+            closePopup();
+        } else {
+            alert('Error removing task');
         }
+    })
+    .catch(error => {
+        console.error('Error removing task:', error);
+    });
+}
 
-       function removeTask(taskDescription) {
-            const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/default/RemoveTask'; // Replace with your Lambda API Gateway URL
-
-            fetch(apiUrl, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    taskDescription: taskDescription
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Task removed successfully');
-                    // Refresh the table or update the UI accordingly
-                    fetchDataFromLambda();
-                    closePopup();
-                } else {
-                    alert('Error removing task');
-                }
-            })
-            .catch(error => {
-                console.error('Error removing task:', error);
-            });
-        }
-    </script>
 </body>
 </html>
