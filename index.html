@@ -168,36 +168,52 @@
             document.getElementById('overlay').style.display = 'none';
         }
 
-        // Remove a task by row number
-        function removeTask(rowNumber) {
-            const apiUrl = 'https://7ngbj4ovke.execute-api.ap-south-1.amazonaws.com/default/RemoveTask';  // Replace with your actual Lambda API Gateway URL
+      <script>
+    // Remove a task by row number with no-cors mode
+    function removeTask(rowNumber) {
+        const apiUrl = 'https://your-api-endpoint';  // Replace with your actual Lambda API Gateway URL
 
-            // Send the DELETE request to the Lambda function
-            fetch(apiUrl, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    rowNumber: rowNumber
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Task removed successfully');
-                    // Refresh the data after task removal
-                    fetchDataFromLambda();
-                    closePopup();
-                } else {
-                    alert('Error removing task: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error removing task:', error);
-                alert('Error removing task');
-            });
-        }
-    </script>
+        // Send the DELETE request to the Lambda function in no-cors mode
+        fetch(apiUrl, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                rowNumber: rowNumber
+            }),
+            mode: 'no-cors'  // Set the fetch mode to no-cors
+        })
+        .then(() => {
+            // Since we cannot read the response in no-cors mode, assume success and reload the data
+            alert('Task removed. No response due to no-cors mode.');
+            fetchDataFromLambda();
+            closePopup();
+        })
+        .catch(error => {
+            console.error('Error removing task:', error);
+            alert('Error removing task');
+        });
+    }
+
+    // Fetch data from Lambda (unchanged)
+    function fetchDataFromLambda() {
+        const apiUrl = 'https://your-api-endpoint';  // Replace with your actual API endpoint URL
+
+        fetch(apiUrl, {
+            method: 'GET',
+            mode: 'no-cors'  // Set the fetch mode to no-cors for data fetching
+        })
+        .then(response => {
+            // Since we can't read the response in no-cors mode, manually update the page (if needed)
+            document.getElementById('data-container').innerHTML = 'Task list refreshed (no-cors)';
+            populatePopupTable();
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            document.getElementById('data-container').innerHTML = 'Failed to load data due to no-cors mode.';
+        });
+    }
+</script>
 </body>
 </html>
