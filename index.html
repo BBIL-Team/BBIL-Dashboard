@@ -167,33 +167,36 @@
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
-    // Remove a task by row number with no-cors mode
-    function removeTask(rowNumber) {
-        const apiUrl = 'https://7ngbj4ovke.execute-api.ap-south-1.amazonaws.com/default/RemoveTask';  // Replace with your actual Lambda API Gateway URL
+   // Remove a task by row number
+        function removeTask(rowNumber) {
+            const apiUrl = 'https://7ngbj4ovke.execute-api.ap-south-1.amazonaws.com/default/RemoveTask';  // Replace with your actual Lambda API Gateway URL
 
-        // Send the DELETE request to the Lambda function in no-cors mode
-        fetch(apiUrl, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                rowNumber: rowNumber
-            }),
-            mode: 'no-cors'  // Set the fetch mode to no-cors
-        })
-        .then(() => {
-            // Since we cannot read the response in no-cors mode, assume success and reload the data
-            alert('Task removed. No response due to no-cors mode.');
-            fetchDataFromLambda();
-            closePopup();
-        })
-        .catch(error => {
-            console.error('Error removing task:', error);
-            alert('Error removing task');
-        });
-    }
-
-</script>
+            // Send the DELETE request to the Lambda function
+            fetch(apiUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rowNumber: rowNumber
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Task removed successfully');
+                    // Refresh the data after task removal
+                    fetchDataFromLambda();
+                    closePopup();
+                } else {
+                    alert('Error removing task: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error removing task:', error);
+                alert('Error removing task');
+            });
+        }
+    </script>
 </body>
 </html>
