@@ -69,7 +69,7 @@
     <br>
     <button class="button" onclick="showPopup()">Remove Task</button>
 
-    <!-- Popup for adding tasks -->
+    <!-- Popup for removing tasks -->
     <div id="popup" class="popup">
         <h3>Remove Task</h3>
         <table id="popupTable">
@@ -94,7 +94,6 @@
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
     <script>
-
         function onLoadFunction() {
             console.log("Page has loaded.");
             fetchDataFromLambda();
@@ -139,6 +138,17 @@
                 const endDate = row.cells[3].innerText;
                 const remarks = row.cells[4].innerText;
 
+                // Create a new row for the popup table
+                const taskHtml = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${employeeName}</td>
+                        <td>${taskDescription}</td>
+                        <td>${startDate}</td>
+                        <td>${endDate}</td>
+                        <td>${remarks}</td>
+                    </tr>
+                `;
                 popupTaskList.insertAdjacentHTML('beforeend', taskHtml);
             });
         }
