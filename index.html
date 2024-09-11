@@ -62,7 +62,7 @@
     </style>
 </head>
 
-    <body onload="onLoadFunction()">
+<body onload="onLoadFunction()">
     <h1>Fetch Data from Lambda</h1>
     <div id="data-container">Loading data...</div>
 
@@ -72,36 +72,30 @@
     <!-- Popup for adding tasks -->
     <div id="popup" class="popup">
         <h3>Remove Task</h3>
-	<table id ="popupTable">
-		<thead>
-			<tr>
-				<th>Row Number</th>
-				<th>Employee Name</th>
-				<th>Task Description</th>
-				<th>Start Date</th>
-				<th>End Date</th>
-				<th>Remarks</th>
-			</tr>
-		</thead>
-	<tbody id="popupTaskList">
-		<!----------- Tasks wil be populated here----->
-	</tbody>
-	</table>
-	    <button class="button" onclick="closePopup()">
-        </div>
+        <table id="popupTable">
+            <thead>
+                <tr>
+                    <th>Row Number</th>
+                    <th>Employee Name</th>
+                    <th>Task Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody id="popupTaskList">
+                <!-- Tasks will be populated here -->
+            </tbody>
+        </table>
+        <button class="button" onclick="closePopup()">Close</button>
+    </div>
 
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
-    <!-- Success message popup -->
-    <div id="messagePopup" class="popup">
-        <p id="messageContent"></p>
-        <button class="button" onclick="closeMessagePopup()">Close</button>
-    </div>
-
     <script>
 
-	function onLoadFunction() {
+        function onLoadFunction() {
             console.log("Page has loaded.");
             fetchDataFromLambda();
         }
@@ -114,12 +108,50 @@
                 .then(data => {
                     console.log("Fetched HTML data:", data);
                     document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
+                    populateTable();
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                     const container = document.getElementById('data-container');
                     container.innerHTML = 'Failed to load data. Please check the console for details.';
                 });
+        }
+
+        function populateTable() {
+            const tableBody = document.querySelector('#data-container table tbody');
+            const popupTaskList = document.getElementById('popupTaskList');
+
+            // Check if table body is available
+            if (!tableBody) {
+                console.error('Table body not found.');
+                return;
+            }
+
+            // Clear the popup task list before populating
+            popupTaskList.innerHTML = '';
+
+            // Get all rows from the main table
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                const employeeName = row.cells[0].innerText;
+                const taskDescription = row.cells[1].innerText;
+                const startDate = row.cells[2].innerText;
+                const endDate = row.cells[3].innerText;
+                const remarks = row.cells[4].innerText;
+
+                // Create a new row for the popup table
+                const taskHtml = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${employeeName}</td>
+                        <td>${taskDescription}</td>
+                        <td>${startDate}</td>
+                        <td>${endDate}</td>
+                        <td>${remarks}</td>
+                    </tr>
+                `;
+                popupTaskList.insertAdjacentHTML('beforeend', taskHtml);
+            });
         }
 
         function showPopup() {
@@ -131,40 +163,6 @@
             document.getElementById('popup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
-
-        function closeMessagePopup() {
-            document.getElementById('messagePopup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        document.getElementById('taskForm').onsubmit = async function(event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            const form = event.target;
-            const formData = new FormData(form);
-            const params = new URLSearchParams(formData).toString();
-
-            try {
-                const response = await fetch(form.action, {
-                    method: form.method,
-                    headers: {
-                        'Content-Type': form.enctype
-                    },
-                    body: params
-                });
-
-                const result = await response.json();
-                document.getElementById('messageContent').innerText = result.message;
-                document.getElementById('messagePopup').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-
-                closePopup(); // Close the add task popup
-            } catch (error) {
-                document.getElementById('messageContent').innerText = 'Error: ' + error.message;
-                document.getElementById('messagePopup').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }
-        };
     </script>
 </body>
 </html>
