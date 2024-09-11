@@ -72,21 +72,7 @@
     <!-- Popup for removing tasks -->
     <div id="popup" class="popup">
         <h3>Remove Task</h3>
-        <table id="popupTable">
-            <thead>
-                <tr>
-                    <th>Row Number</th>
-                    <th>Employee Name</th>
-                    <th>Task Description</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Remarks</th>
-                </tr>
-            </thead>
-            <tbody id="popupTaskList">
-                <!-- Tasks will be populated here -->
-            </tbody>
-        </table>
+        <div id="popupTableContainer"></div>
         <button class="button" onclick="closePopup()">Close</button>
     </div>
 
@@ -107,7 +93,6 @@
                 .then(data => {
                     console.log("Fetched HTML data:", data);
                     document.getElementById('data-container').innerHTML = data;  // Insert HTML into the container
-                    populateTable();
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -116,44 +101,11 @@
                 });
         }
 
-        function populateTable() {
-            const tableBody = document.querySelector('#data-container table tbody');
-            const popupTaskList = document.getElementById('popupTaskList');
-
-            // Check if table body is available
-            if (!tableBody) {
-                console.error('Table body not found.');
-                return;
-            }
-
-            // Clear the popup task list before populating
-            popupTaskList.innerHTML = '';
-
-            // Get all rows from the main table
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach((row, index) => {
-                const employeeName = row.cells[0].innerText;
-                const taskDescription = row.cells[1].innerText;
-                const startDate = row.cells[2].innerText;
-                const endDate = row.cells[3].innerText;
-                const remarks = row.cells[4].innerText;
-
-                // Create a new row for the popup table
-                const taskHtml = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${employeeName}</td>
-                        <td>${taskDescription}</td>
-                        <td>${startDate}</td>
-                        <td>${endDate}</td>
-                        <td>${remarks}</td>
-                    </tr>
-                `;
-                popupTaskList.insertAdjacentHTML('beforeend', taskHtml);
-            });
-        }
-
         function showPopup() {
+            // Copy the table from the main container into the popup
+            const tableHtml = document.getElementById('data-container').innerHTML;
+            document.getElementById('popupTableContainer').innerHTML = tableHtml;
+
             document.getElementById('popup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
