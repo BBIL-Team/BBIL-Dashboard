@@ -3,45 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Tasks</title>
+    <title>Lambda Response Display</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-        table, th, td {
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
             border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
+        .response {
+            white-space: pre-wrap; /* Preserve formatting */
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
-    <h1>Employee Tasks</h1>
-    <label for="employeeId">Employee ID:</label>
-    <input type="text" id="employeeId" name="employeeId">
-    <button onclick="fetchTasks()">Fetch Tasks</button>
-    <div id="tasksContainer"></div>
+    <div class="container">
+        <h1>Lambda Function Response</h1>
+        <button onclick="fetchLambdaResponse()">Fetch Data</button>
+        <div id="response" class="response">Response will be displayed here...</div>
+    </div>
 
     <script>
-        function fetchTasks() {
-            const employeeId = document.getElementById('employeeId').value;
-            const lambdaUrl = ` https://wvufe1ks9c.execute-api.ap-south-1.amazonaws.com/S1/Test5`; // Replace with your actual API Gateway URL
+        function fetchLambdaResponse() {
+            const apiUrl = 'https://your-api-gateway-url.amazonaws.com/your-lambda-endpoint'; // Replace with your Lambda endpoint
 
-            fetch(lambdaUrl)
-                .then(response => response.text())
+            fetch(apiUrl)
+                .then(response => response.json()) // Assuming the Lambda function returns JSON
                 .then(data => {
-                    document.getElementById('tasksContainer').innerHTML = data;
+                    document.getElementById('response').textContent = JSON.stringify(data, null, 2); // Display the formatted JSON
                 })
                 .catch(error => {
-                    console.error('Error fetching tasks:', error);
-                    document.getElementById('tasksContainer').innerText = 'Failed to load tasks.';
+                    console.error('Error fetching data:', error);
+                    document.getElementById('response').textContent = 'Failed to fetch data. Check the console for details.';
                 });
         }
     </script>
