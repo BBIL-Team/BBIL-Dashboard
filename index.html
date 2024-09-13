@@ -1,44 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Employee Task Viewer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lambda Response Display</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .response {
+            white-space: pre-wrap; /* Preserve formatting */
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
-    <h1>Search Employee Tasks</h1>
-    <form id="taskForm">
-        <label for="employeeId">Employee ID:</label>
-        <input type="text" id="employeeId" name="employeeId" required>
-        <button type="submit">Get Tasks</button>
-    </form>
-
-    <div id="taskTable"></div>
+    <div class="container">
+        <h1>Lambda Function Response</h1>
+        <button onclick="fetchLambdaResponse()">Fetch Data</button>
+        <div id="response" class="response">Response will be displayed here...</div>
+    </div>
 
     <script>
-        document.getElementById('taskForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const employeeId = document.getElementById('employeeId').value;
-            
-            fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5>?employeeId=${employeeId}`)
-                .then(response => response.text())
+        function fetchLambdaResponse() {
+            const apiUrl = 'https://your-api-gateway-url.amazonaws.com/your-lambda-endpoint'; // Replace with your Lambda endpoint
+
+            fetch(apiUrl)
+                .then(response => response.json()) // Assuming the Lambda function returns JSON
                 .then(data => {
-                    document.getElementById('taskTable').innerHTML = data;
+                    document.getElementById('response').textContent = JSON.stringify(data, null, 2); // Display the formatted JSON
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('taskTable').innerHTML = 'Failed to load tasks';
+                    console.error('Error fetching data:', error);
+                    document.getElementById('response').textContent = 'Failed to fetch data. Check the console for details.';
                 });
-        });
+        }
     </script>
 </body>
 </html>
