@@ -3,50 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lambda Response Display</title>
+    <title>Employee Tasks</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        table, th, td {
+            border: 1px solid black;
         }
-        .response {
-            white-space: pre-wrap; /* Preserve formatting */
-            border: 1px solid #ddd;
+        th, td {
             padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 3px;
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Lambda Function Response</h1>
-        <button onclick="fetchLambdaResponse()">Fetch Data</button>
-        <div id="response" class="response">Response will be displayed here...</div>
-    </div>
 
-    <script>
-        function fetchLambdaResponse() {
-            const apiUrl = 'https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5'; // Replace with your Lambda endpoint
+<h2>Fetch Employee Tasks</h2>
 
-            fetch(apiUrl)
-                .then(response => response.json()) // Assuming the Lambda function returns JSON
-                .then(data => {
-                    document.getElementById('response').textContent = JSON.stringify(data, null, 2); // Display the formatted JSON
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('response').textContent = 'Failed to fetch data. Check the console for details.';
-                });
-        }
-    </script>
+<form id="taskForm">
+    <label for="employeeId">Enter Employee ID:</label>
+    <input type="text" id="employeeId" name="employeeId" required>
+    <button type="submit">Get Tasks</button>
+</form>
+
+<div id="taskResult"></div>
+
+<script>
+    document.getElementById('taskForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const employeeId = document.getElementById('employeeId').value;
+        const apiUrl = 'https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5';  // Replace with your actual API Gateway URL
+
+        fetch(`${apiUrl}?employeeId=${employeeId}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('taskResult').innerHTML = data;
+            })
+            .catch(error => {
+                document.getElementById('taskResult').innerHTML = 'Error fetching tasks.';
+                console.error('Error:', error);
+            });
+    });
+</script>
+
 </body>
 </html>
