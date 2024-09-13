@@ -1,49 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Tasks</title>
+    <title>Employee Task Viewer</title>
     <style>
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
         }
         th, td {
+            border: 1px solid black;
             padding: 8px;
             text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
         }
     </style>
 </head>
 <body>
-    <h1>Employee Tasks</h1>
-    <label for="employeeId">Employee ID:</label>
-    <input type="text" id="employeeId" name="employeeId">
-    <button onclick="fetchTasks()">Fetch Tasks</button>
-    <div id="tasksContainer"></div>
+    <h1>Search Employee Tasks</h1>
+    <form id="taskForm">
+        <label for="employeeId">Employee ID:</label>
+        <input type="text" id="employeeId" name="employeeId" required>
+        <button type="submit">Get Tasks</button>
+    </form>
+
+    <div id="taskTable"></div>
 
     <script>
-        function fetchTasks() {
+        document.getElementById('taskForm').addEventListener('submit', function(event) {
+            event.preventDefault();
             const employeeId = document.getElementById('employeeId').value;
-            const lambdaUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5`; // Replace with your actual API Gateway URL
-
-            fetch(lambdaUrl)
+            
+            fetch(`https://<your-api-endpoint>?employeeId=${employeeId}`)
                 .then(response => response.text())
                 .then(data => {
-                    document.getElementById('tasksContainer').innerHTML = data;
+                    document.getElementById('taskTable').innerHTML = data;
                 })
                 .catch(error => {
-                    console.error('Error fetching tasks:', error);
-                    document.getElementById('tasksContainer').innerText = 'Failed to load tasks.';
+                    console.error('Error:', error);
+                    document.getElementById('taskTable').innerHTML = 'Failed to load tasks';
                 });
-        }
+        });
     </script>
 </body>
 </html>
