@@ -1,54 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Tasks</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-    </style>
+    <title>Fetch Task</title>
 </head>
 <body>
+    <h1>Fetch Task by Employee ID</h1>
+    <form id="fetchForm">
+        <label for="employeeId">Employee ID:</label>
+        <input type="text" id="employeeId" name="EmployeeID" required>
+        <button type="submit">Fetch Tasks</button>
+    </form>
+    <div id="result"></div>
 
-<h2>Fetch Employee Tasks</h2>
+    <script>
+        document.getElementById('fetchForm').onsubmit = function(event) {
+            event.preventDefault(); // Prevent default form submission
 
-<form id="taskForm">
-    <label for="employeeId">Enter Employee ID:</label>
-    <input type="text" id="employeeId" name="employeeId" required>
-    <button type="submit">Get Tasks</button>
-</form>
+            const employeeId = document.getElementById('employeeId').value.trim();
+            const apiUrl = https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
 
-<div id="taskResult"></div>
-
-<script>
-    document.getElementById('taskForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        const employeeId = document.getElementById('employeeId').value;
-        const apiUrl = 'https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5';  // Replace with your actual API Gateway URL
-
-        fetch(`${apiUrl}?employeeId=${employeeId}`)
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('taskResult').innerHTML = data;
-            })
-            .catch(error => {
-                document.getElementById('taskResult').innerHTML = 'Error fetching tasks.';
-                console.error('Error:', error);
-            });
-    });
-</script>
-
+            fetch(apiUrl)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('result').innerHTML = data;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        };
+    </script>
 </body>
 </html>
