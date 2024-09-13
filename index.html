@@ -18,7 +18,8 @@
             event.preventDefault(); // Prevent default form submission
 
             const employeeId = document.getElementById('employeeId').value.trim();
-            const apiUrl = https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`
+            // Corrected URL with proper quotes
+            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
 
             fetch(apiUrl)
                 .then(response => response.text())
