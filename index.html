@@ -7,12 +7,28 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #e2e2e2;
+        }
+        header {
+            background-color: #4CAF50;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+        .logo {
+            height: 40px; /* Adjust the height as needed */
+            margin-right: 20px;
         }
         .container {
             max-width: 900px;
-            margin: 0 auto;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
         .card {
             background: white;
@@ -60,8 +76,11 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <header>
+        <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
         <h1>Employee Task List</h1>
+    </header>
+    <div class="container">
         <form id="employeeForm">
             <label for="employeeID">Enter Employee ID:</label>
             <input type="text" id="employeeID" name="employeeID" required>
@@ -83,7 +102,7 @@
                 return;
             }
 
-            fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeID)}`)
+            fetch(`https://your-api-id.execute-api.region.amazonaws.com/stage/resource?EmployeeID=${encodeURIComponent(employeeID)}`)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('cardContainer').innerHTML = data;
