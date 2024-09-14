@@ -4,7 +4,53 @@
     <meta charset="UTF-8">
     <title>Fetch Task</title>
     <style>
-        /* Basic styling for popups */
+        /* Basic styling for body and form */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* Styling for popups */
         .popup {
             display: none;
             position: fixed;
@@ -14,15 +60,19 @@
             width: 80%;
             max-width: 600px;
             background: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             padding: 20px;
             z-index: 1000;
+            overflow-y: auto;
         }
 
         .popup-header {
-            font-size: 18px;
-            margin-bottom: 10px;
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
         }
 
         .overlay {
@@ -32,15 +82,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.4);
             z-index: 999;
         }
 
         .task-list {
             margin-bottom: 20px;
         }
-        .button:hover {
-            background-color: #45a049;
+
+        .task-list label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .task-list input[type="radio"] {
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -57,23 +114,21 @@
     <div id="selectTaskPopup" class="popup">
         <div class="popup-header">Select Task to Edit</div>
         <div id="taskList" class="task-list"></div>
-        <br>
         <button class="button" onclick="openEditTaskPopup()">Edit Task</button>
         <button class="button" onclick="closePopup()">Close</button>
     </div>
 
     <!-- Popup for editing task -->
     <div id="editTaskPopup" class="popup">
-        <div class="popup-header">Edit Task</div>
+        <h3>Edit Task</h3>
         <form id="editForm">
+            <input type="hidden" id="editTaskRowIndex">
             <label for="rating">Rating:</label>
-            <input type="number" id="rating" name="rating" min="1" max="5" required>
-            <br><br>
+            <input type="text" id="rating" name="rating" required><br><br>
             <label for="remark">Remark:</label>
-            <textarea id="remark" name="remark" rows="4" cols="50" required></textarea>
-            <br><br>
-            <button type="button" onclick="saveTask()">Save</button>
-            <button type="button" onclick="closeEditTaskPopup()">Close</button>
+            <input type="text" id="remark" name="remark"><br><br>
+            <button class="button" type="button" onclick="saveTask()">Save</button>
+            <button class="button" type="button" onclick="closeEditTaskPopup()">Cancel</button>
         </form>
     </div>
 
@@ -117,9 +172,8 @@
                             radio.value = taskId;
                             radio.id = `task-${index}`;
 
-                            label.appendChild(radio);
+                            label.prepend(radio);
                             taskList.appendChild(label);
-                            taskList.appendChild(document.createElement('br'));
                         }
                     });
 
