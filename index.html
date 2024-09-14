@@ -35,6 +35,10 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+
+        .task-list {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -49,8 +53,8 @@
     <!-- Popup for selecting task -->
     <div id="selectTaskPopup" class="popup">
         <div class="popup-header">Select Task to Edit</div>
-        <select id="taskSelect" name="taskId" required></select>
-        <br><br>
+        <div id="taskList" class="task-list"></div>
+        <br>
         <button type="button" onclick="openEditTaskPopup()">Edit Task</button>
         <button type="button" onclick="closePopup()">Close</button>
     </div>
@@ -92,19 +96,27 @@
                     const table = document.createElement('div');
                     table.innerHTML = data;
                     const rows = table.querySelectorAll('tbody tr');
-                    const taskSelect = document.getElementById('taskSelect');
-                    taskSelect.innerHTML = '';  // Clear existing options
+                    const taskList = document.getElementById('taskList');
+                    taskList.innerHTML = '';  // Clear existing tasks
 
-                    rows.forEach(row => {
+                    rows.forEach((row, index) => {
                         const cells = row.querySelectorAll('td');
                         const taskId = cells[2].textContent.trim(); // Task is in the third column
-                        const description = cells[2].textContent.trim(); // Task description
+                        const taskDescription = cells[2].textContent.trim(); // Task description
 
-                        if (taskId && description) {
-                            const option = document.createElement('option');
-                            option.value = taskId;
-                            option.textContent = description;
-                            taskSelect.appendChild(option);
+                        if (taskId && taskDescription) {
+                            const label = document.createElement('label');
+                            label.textContent = taskDescription;
+
+                            const radio = document.createElement('input');
+                            radio.type = 'radio';
+                            radio.name = 'task';
+                            radio.value = taskId;
+                            radio.id = `task-${index}`;
+
+                            label.appendChild(radio);
+                            taskList.appendChild(label);
+                            taskList.appendChild(document.createElement('br'));
                         }
                     });
 
@@ -119,8 +131,13 @@
         };
 
         function openEditTaskPopup() {
-            const taskSelect = document.getElementById('taskSelect');
-            selectedTaskId = taskSelect.value;  // Store selected task ID
+            const radios = document.querySelectorAll('input[name="task"]');
+            for (const radio of radios) {
+                if (radio.checked) {
+                    selectedTaskId = radio.value;  // Store selected task ID
+                    break;
+                }
+            }
 
             if (selectedTaskId) {
                 // Hide the task selection popup
