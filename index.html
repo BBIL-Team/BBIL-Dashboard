@@ -1,233 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fetch Task</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Task List</title>
     <style>
-        /* Basic styling for body and form */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
+            margin: 20px;
+            background-color: #e2e2e2;
         }
-
-        h1 {
-            color: #333;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
         }
-
-        form {
-            margin-bottom: 20px;
-        }
-
-        label {
-            font-weight: bold;
-        }
-
-        input[type="text"], input[type="number"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 200px;
-        }
-
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-
-        /* Styling for popups */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 600px;
+        .card {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
             padding: 20px;
-            z-index: 1000;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-
-        .popup-header {
-            font-size: 20px;
-            margin-bottom: 15px;
+        .card h3 {
+            margin: 0;
             color: #333;
-            border-bottom: 2px solid #28a745;
-            padding-bottom: 10px;
         }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 999;
+        .card p {
+            margin: 5px 0;
+            color: #666;
         }
-
-        .task-list {
+        .card .label {
+            font-weight: bold;
+        }
+        form {
             margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
         }
-
-        .task-list label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 16px;
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex: 1;
         }
-
-        .task-list input[type="radio"] {
-            margin-right: 10px;
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <h1>Fetch Task by Employee ID</h1>
-    <form id="fetchForm">
-        <label for="employeeId">Employee ID:</label>
-        <input type="text" id="employeeId" name="EmployeeID" required>
-        <button type="submit">Fetch Tasks</button>
-    </form>
-    <div id="result"></div>
-
-    <!-- Popup for selecting task -->
-    <div id="selectTaskPopup" class="popup">
-        <div class="popup-header">Select Task to Edit</div>
-        <div id="taskList" class="task-list"></div>
-        <button class="button" onclick="openEditTaskPopup()">Edit Task</button>
-        <button class="button" onclick="closePopup()">Close</button>
-    </div>
-
-    <!-- Popup for editing task -->
-    <div id="editTaskPopup" class="popup">
-        <h3>Edit Task</h3>
-        <form id="editForm">
-            <input type="hidden" id="editTaskRowIndex">
-            <label for="rating">Rating:</label>
-            <input type="number" id="rating" name="rating" min="1" max="5"><br><br>
-            <label for="remark">Remark:</label>
-            <input type="text" id="remark" name="remark"><br><br>
-            <button class="button" type="button" onclick="saveTask()">Save</button>
-            <button class="button" type="button" onclick="closeEditTaskPopup()">Cancel</button>
+    <div class="container">
+        <h1>Employee Task List</h1>
+        <form id="employeeForm">
+            <label for="employeeID">Enter Employee ID:</label>
+            <input type="text" id="employeeID" name="employeeID" required>
+            <button type="submit">Fetch Tasks</button>
         </form>
+        <div id="cardContainer">
+            <!-- Task cards from Lambda will be inserted here -->
+        </div>
     </div>
-
-    <!-- Overlay to darken the background -->
-    <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
     <script>
-        let selectedTaskId = null;  // Variable to store the selected task ID
+        document.getElementById('employeeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        document.getElementById('fetchForm').onsubmit = function(event) {
-            event.preventDefault(); // Prevent default form submission
+            var employeeID = document.getElementById('employeeID').value.trim();
 
-            const employeeId = document.getElementById('employeeId').value.trim();
-            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
+            if (!employeeID) {
+                alert('Please enter an Employee ID.');
+                return;
+            }
 
-            fetch(apiUrl)
-                .then(response => response.text())  // Handle response as text
+            fetch(`https://your-api-id.execute-api.region.amazonaws.com/stage/resource?EmployeeID=${encodeURIComponent(employeeID)}`)
+                .then(response => response.text())
                 .then(data => {
-                    // Display HTML response directly
-                    document.getElementById('result').innerHTML = data;
-
-                    // Extract task information and populate the task selection popup
-                    const table = document.createElement('div');
-                    table.innerHTML = data;
-                    const rows = table.querySelectorAll('tbody tr');
-                    const taskList = document.getElementById('taskList');
-                    taskList.innerHTML = '';  // Clear existing tasks
-
-                    rows.forEach((row, index) => {
-                        const cells = row.querySelectorAll('td');
-                        const taskId = cells[2].textContent.trim(); // Task is in the third column
-                        const taskDescription = cells[2].textContent.trim(); // Task description
-
-                        if (taskId && taskDescription) {
-                            const label = document.createElement('label');
-                            label.textContent = taskDescription;
-
-                            const radio = document.createElement('input');
-                            radio.type = 'radio';
-                            radio.name = 'task';
-                            radio.value = taskId;
-                            radio.id = `task-${index}`;
-
-                            label.prepend(radio);
-                            taskList.appendChild(label);
-                        }
-                    });
-
-                    // Show the task selection popup and overlay
-                    document.getElementById('selectTaskPopup').style.display = 'block';
-                    document.getElementById('overlay').style.display = 'block';
+                    document.getElementById('cardContainer').innerHTML = data;
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    document.getElementById('result').innerHTML = 'Error fetching data.';
+                    document.getElementById('cardContainer').innerHTML = '<p>Error fetching data. Please try again later.</p>';
                 });
-        };
-
-        function openEditTaskPopup() {
-            const radios = document.querySelectorAll('input[name="task"]');
-            for (const radio of radios) {
-                if (radio.checked) {
-                    selectedTaskId = radio.value;  // Store selected task ID
-                    break;
-                }
-            }
-
-            if (selectedTaskId) {
-                // Hide the task selection popup
-                closePopup();
-
-                // Show the edit task popup
-                document.getElementById('editTaskPopup').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }
-        }
-
-        function saveTask() {
-            const rating = document.getElementById('rating').value;
-            const remark = document.getElementById('remark').value;
-
-            alert(`Task ID: ${selectedTaskId}\nRating: ${rating}\nRemark: ${remark}`);
-
-            // Here you would send the updated data to your server or API
-            // For example, use fetch to send a POST request to your Lambda function
-
-            // Close the edit task popup
-            closeEditTaskPopup();
-        }
-
-        function closePopup() {
-            document.getElementById('selectTaskPopup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        function closeEditTaskPopup() {
-            document.getElementById('editTaskPopup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
+        });
     </script>
 </body>
 </html>
