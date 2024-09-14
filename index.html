@@ -39,6 +39,9 @@
         .task-list {
             margin-bottom: 20px;
         }
+        .button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -55,8 +58,8 @@
         <div class="popup-header">Select Task to Edit</div>
         <div id="taskList" class="task-list"></div>
         <br>
-        <button type="button" onclick="openEditTaskPopup()">Edit Task</button>
-        <button type="button" onclick="closePopup()">Close</button>
+        <button class="button" onclick="openEditTaskPopup()">Edit Task</button>
+        <button class="button" onclick="closePopup()">Close</button>
     </div>
 
     <!-- Popup for editing task -->
