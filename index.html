@@ -83,7 +83,7 @@
                 return;
             }
 
-            fetch(`https://your-api-id.execute-api.region.amazonaws.com/stage/resource?EmployeeID=${encodeURIComponent(employeeID)}`)
+            fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeID)}`)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('cardContainer').innerHTML = data;
