@@ -12,6 +12,27 @@
             align-items: center;
             color: white;
         }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .card h3 {
+            margin: 0;
+            color: #333;
+        }
+        .card p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .card .label {
+            font-weight: bold;
+        }
         .logo {
             height: 120px; /* Adjust the height as needed */
             margin-right: 20px;
@@ -85,7 +106,9 @@
         <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
     </header>
      <h1>Employee Tasks List</h1>
-    <div id="data-container">Loading data...</div>
+    <div id="cardContainer">
+            <!-- Task cards from Lambda will be inserted here -->
+        </div>
 
     <br>
     <button class="button" onclick="showAddPopup()">Add Task</button>
