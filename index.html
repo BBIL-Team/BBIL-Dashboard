@@ -5,60 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lambda Response Display</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        .button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        .popup, .overlay {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ccc;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        .overlay {
-            display: none;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-        .popup input, .popup textarea {
-            display: block;
-            margin: 10px 0;
-        }
+        /* Add your styles here */
+        /* ... */
     </style>
 </head>
 <body>
@@ -74,8 +22,8 @@
             <input type="number" id="rating" name="rating" min="1" max="5" required>
             <label for="remark">Remark:</label>
             <textarea id="remark" name="remark" rows="4" required></textarea>
-            <button type="submit" class="button">Submit</button>
-            <button type="button" class="button" onclick="closePopup()">Close</button>
+            <button type="submit">Submit</button>
+            <button type="button" onclick="closePopup()">Close</button>
         </form>
     </div>
 
@@ -83,19 +31,17 @@
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
     <script>
-        let selectedTaskId = null;
-
         async function fetchLambdaResponse() {
             try {
                 const response = await fetch('https://zmyx3jjk74.execute-api.ap-south-1.amazonaws.com/default/Edittask');
                 if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
                 }
                 const data = await response.json();
                 displayData(data);
             } catch (error) {
                 console.error('Fetch error:', error);
-                document.getElementById('data-container').textContent = 'Error fetching data: ' + error.message;
+                document.getElementById('data-container').textContent = `Error fetching data: ${error.message}`;
             }
         }
 
@@ -111,7 +57,7 @@
                         <td>${task.endDate}</td>
                         <td>${task.rating || ''}</td>
                         <td>${task.remark || ''}</td>
-                        <td><button class="button" onclick="editTask('${task.id}')">Edit</button></td>
+                        <td><button onclick="editTask('${task.id}')">Edit</button></td>
                     </tr>
                 `;
             });
@@ -149,7 +95,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
                 }
 
                 const result = await response.json();
@@ -158,11 +104,11 @@
                     fetchLambdaResponse(); // Refresh data
                     closePopup();
                 } else {
-                    alert('Error updating task: ' + result.error);
+                    alert(`Error updating task: ${result.error}`);
                 }
             } catch (error) {
                 console.error('Fetch error:', error);
-                alert('Error updating task: ' + error.message);
+                alert(`Error updating task: ${error.message}`);
             }
         };
 
