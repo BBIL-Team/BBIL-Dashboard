@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Fetch Task</title>
     <style>
+        /* Basic styling for popups */
         .popup {
             display: none;
             position: fixed;
@@ -45,13 +46,19 @@
     </form>
     <div id="result"></div>
 
+    <!-- Popup for selecting task -->
+    <div id="selectTaskPopup" class="popup">
+        <div class="popup-header">Select Task to Edit</div>
+        <select id="taskSelect" name="taskId" required></select>
+        <br><br>
+        <button type="button" onclick="openEditTaskPopup()">Edit Task</button>
+        <button type="button" onclick="closePopup()">Close</button>
+    </div>
+
     <!-- Popup for editing task -->
-    <div id="editPopup" class="popup">
+    <div id="editTaskPopup" class="popup">
         <div class="popup-header">Edit Task</div>
         <form id="editForm">
-            <label for="taskSelect">Select Task:</label>
-            <select id="taskSelect" name="taskId" required></select>
-            <br><br>
             <label for="rating">Rating:</label>
             <input type="number" id="rating" name="rating" min="1" max="5" required>
             <br><br>
@@ -59,7 +66,7 @@
             <textarea id="remark" name="remark" rows="4" cols="50" required></textarea>
             <br><br>
             <button type="button" onclick="saveTask()">Save</button>
-            <button type="button" onclick="closePopup()">Close</button>
+            <button type="button" onclick="closeEditTaskPopup()">Close</button>
         </form>
     </div>
 
@@ -67,6 +74,8 @@
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
     <script>
+        let selectedTaskId = null;  // Variable to store the selected task ID
+
         document.getElementById('fetchForm').onsubmit = function(event) {
             event.preventDefault(); // Prevent default form submission
 
@@ -79,7 +88,7 @@
                     // Display HTML response directly
                     document.getElementById('result').innerHTML = data;
 
-                    // Extract task information and populate the popup
+                    // Extract task information and populate the task selection popup
                     const table = document.createElement('div');
                     table.innerHTML = data;
                     const rows = table.querySelectorAll('tbody tr');
@@ -99,8 +108,8 @@
                         }
                     });
 
-                    // Show the popup and overlay
-                    document.getElementById('editPopup').style.display = 'block';
+                    // Show the task selection popup and overlay
+                    document.getElementById('selectTaskPopup').style.display = 'block';
                     document.getElementById('overlay').style.display = 'block';
                 })
                 .catch(error => {
@@ -109,19 +118,40 @@
                 });
         };
 
+        function openEditTaskPopup() {
+            const taskSelect = document.getElementById('taskSelect');
+            selectedTaskId = taskSelect.value;  // Store selected task ID
+
+            if (selectedTaskId) {
+                // Hide the task selection popup
+                closePopup();
+
+                // Show the edit task popup
+                document.getElementById('editTaskPopup').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
+        }
+
         function saveTask() {
-            const taskId = document.getElementById('taskSelect').value;
             const rating = document.getElementById('rating').value;
             const remark = document.getElementById('remark').value;
 
-            alert(`Task ID: ${taskId}\nRating: ${rating}\nRemark: ${remark}`);
+            alert(`Task ID: ${selectedTaskId}\nRating: ${rating}\nRemark: ${remark}`);
 
-            // Close the popup after saving
-            closePopup();
+            // Here you would send the updated data to your server or API
+            // For example, use fetch to send a POST request to your Lambda function
+
+            // Close the edit task popup
+            closeEditTaskPopup();
         }
 
         function closePopup() {
-            document.getElementById('editPopup').style.display = 'none';
+            document.getElementById('selectTaskPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function closeEditTaskPopup() {
+            document.getElementById('editTaskPopup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
     </script>
