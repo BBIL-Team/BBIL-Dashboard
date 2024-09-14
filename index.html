@@ -3,6 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>Fetch Task</title>
+    <style>
+        /* Basic styling for the popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .popup-header {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
 </head>
 <body>
     <h1>Fetch Task by Employee ID</h1>
@@ -13,23 +46,84 @@
     </form>
     <div id="result"></div>
 
+    <!-- Popup for editing task -->
+    <div id="editPopup" class="popup">
+        <div class="popup-header">Edit Task</div>
+        <form id="editForm">
+            <label for="taskSelect">Select Task:</label>
+            <select id="taskSelect" name="taskId" required></select>
+            <br><br>
+            <label for="rating">Rating:</label>
+            <input type="number" id="rating" name="rating" min="1" max="5" required>
+            <br><br>
+            <label for="remark">Remark:</label>
+            <textarea id="remark" name="remark" rows="4" cols="50" required></textarea>
+            <br><br>
+            <button type="button" onclick="saveTask()">Save</button>
+            <button type="button" onclick="closePopup()">Close</button>
+        </form>
+    </div>
+
+    <!-- Overlay to darken the background -->
+    <div id="overlay" class="overlay" onclick="closePopup()"></div>
+
     <script>
         document.getElementById('fetchForm').onsubmit = function(event) {
             event.preventDefault(); // Prevent default form submission
 
             const employeeId = document.getElementById('employeeId').value.trim();
-            // Corrected URL with proper quotes
             const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
 
             fetch(apiUrl)
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(data => {
-                    document.getElementById('result').innerHTML = data;
+                    const resultDiv = document.getElementById('result');
+                    let html = '<table border="1"><thead><tr><th>Task ID</th><th>Task Description</th><th>Edit</th></tr></thead><tbody>';
+
+                    data.tasks.forEach(task => {
+                        html += `
+                            <tr>
+                                <td>${task.id}</td>
+                                <td>${task.description}</td>
+                                <td><button onclick="editTask('${task.id}', '${task.description}')">Edit</button></td>
+                            </tr>
+                        `;
+                    });
+
+                    html += '</tbody></table>';
+                    resultDiv.innerHTML = html;
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
+                    document.getElementById('result').innerHTML = 'Error fetching data.';
                 });
         };
+
+        function editTask(taskId, description) {
+            const taskSelect = document.getElementById('taskSelect');
+            taskSelect.innerHTML = `<option value="${taskId}">${description}</option>`;
+
+            // Show the popup and overlay
+            document.getElementById('editPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function saveTask() {
+            // Here you can handle what to do with the rating and remark data
+            const taskId = document.getElementById('taskSelect').value;
+            const rating = document.getElementById('rating').value;
+            const remark = document.getElementById('remark').value;
+
+            alert(`Task ID: ${taskId}\nRating: ${rating}\nRemark: ${remark}`);
+
+            // Close the popup after saving
+            closePopup();
+        }
+
+        function closePopup() {
+            document.getElementById('editPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
     </script>
 </body>
 </html>
