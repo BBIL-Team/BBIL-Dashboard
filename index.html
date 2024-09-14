@@ -75,8 +75,24 @@
             const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
 
             fetch(apiUrl)
-                .then(response => response.json())
+                .then(response => {
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json(); // Parse JSON response
+                    } else {
+                        return response.text(); // Parse as text if not JSON
+                    }
+                })
                 .then(data => {
+                    // If response was text and not JSON, log it and display error
+                    if (typeof data === 'string') {
+                        console.error('Received non-JSON response:', data);
+                        document.getElementById('result').innerHTML = 'Error: Received non-JSON response.';
+                        return;
+                    }
+
+                    // Construct table from JSON data
                     const resultDiv = document.getElementById('result');
                     let html = '<table border="1"><thead><tr><th>Task ID</th><th>Task Description</th><th>Edit</th></tr></thead><tbody>';
 
