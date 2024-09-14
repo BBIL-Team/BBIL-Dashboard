@@ -229,27 +229,30 @@
         };
 
         function populatePopupTable() {
-            const tableBody = document.querySelector('#cardContainer table tbody');
-            const popupTaskList = document.getElementById('popupTaskList');
+    const tableBody = document.querySelector('#cardContainer table tbody');
+    const popupTaskList = document.getElementById('popupTaskList');
 
-            if (!tableBody) {
-                console.error('Table body not found.');
-                return;
-            }
+    if (!tableBody) {
+        console.error('Table body not found.');
+        return;
+    }
 
-            popupTaskList.innerHTML = '';
+    popupTaskList.innerHTML = '';
 
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach((row, index) => {
-                const clonedRow = row.cloneNode(true);
-                const removeButtonCell = document.createElement('td');
-                
-                removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index + 1})">X</button>`;
-                clonedRow.appendChild(removeButtonCell);
-                
-                popupTaskList.appendChild(clonedRow);
-            });
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const clonedRow = row.cloneNode(true);
+        const removeButtonCell = document.createElement('td');
+
+        // Skip the remove button for the first row
+        if (index !== 0) {
+            removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index + 1})">X</button>`;
         }
+
+        clonedRow.appendChild(removeButtonCell);
+        popupTaskList.appendChild(clonedRow);
+    });
+}
 
         function removeTask(rowNumber) {
             const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
