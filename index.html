@@ -181,7 +181,7 @@
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    document.getElementById('data-container').innerHTML = 'Failed to load data.';
+                    document.getElementById('cardContainer').innerHTML = 'Failed to load data.';
                 });
         }
 
@@ -234,7 +234,7 @@
         };
 
         function populatePopupTable() {
-            const tableBody = document.querySelector('#data-container table tbody');
+            const tableBody = document.querySelector('#cardContainer table tbody');
             const popupTaskList = document.getElementById('popupTaskList');
 
             if (!tableBody) {
