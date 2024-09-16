@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Task List</title>
     <style>
+        /* Styles for the page */
         body {
             font-family: Arial, sans-serif;
+            background-color: #e2e2e2;
             margin: 0;
             padding: 0;
-            background-color: #e2e2e2;
         }
         header {
             background-color: #008080;
@@ -30,32 +31,33 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin: 10px 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
         }
         form {
-            margin-bottom: 20px;
             display: flex;
             gap: 10px;
+            margin-bottom: 20px;
         }
         input[type="text"] {
             padding: 10px;
+            flex: 1;
             border: 1px solid #ccc;
             border-radius: 4px;
-            flex: 1;
         }
         button {
             padding: 10px 20px;
-            border: none;
             background-color: #4CAF50;
             color: white;
+            border: none;
             border-radius: 4px;
             cursor: pointer;
         }
@@ -69,9 +71,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            border: 1px solid #ccc;
             padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
             z-index: 1000;
+            max-width: 90%;
         }
         .overlay {
             display: none;
@@ -99,28 +103,19 @@
         <div id="cardContainer">
             <!-- Task cards from Lambda will be inserted here -->
         </div>
+        <!-- Single Edit button -->
+        <button id="editButton" style="display:none;" onclick="showEditPopup()">Edit All Tasks</button>
     </div>
 
     <!-- Popup for editing tasks -->
     <div id="editPopup" class="popup">
         <h3>Edit Tasks</h3>
-        <table id="popupTable">
-            <thead>
-                <tr>
-                    <th>Task Description</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Remarks</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="popupTaskList">
-                <!-- Tasks will be populated here -->
-            </tbody>
-        </table>
+        <div id="popupContent">
+            <!-- Content for popup will be inserted here -->
+        </div>
         <button onclick="closePopup()">Close</button>
     </div>
-
+    
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
@@ -139,24 +134,29 @@
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('cardContainer').innerHTML = data;
+                    
+                    // Show the "Edit" button if there are tasks
+                    if (data.trim() !== '') {
+                        document.getElementById('editButton').style.display = 'block';
+                    } else {
+                        document.getElementById('editButton').style.display = 'none';
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                     document.getElementById('cardContainer').innerHTML = '<p>Error fetching data. Please try again later.</p>';
+                    document.getElementById('editButton').style.display = 'none';
                 });
         });
 
-        function showEditPopup(taskId) {
-            fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5/${taskId}`)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('popupTaskList').innerHTML = data;
-                    document.getElementById('editPopup').style.display = 'block';
-                    document.getElementById('overlay').style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error fetching task details:', error);
-                });
+        function showEditPopup() {
+            // Copy the content of the cardContainer to the popup
+            var taskContent = document.getElementById('cardContainer').innerHTML;
+            document.getElementById('popupContent').innerHTML = taskContent;
+
+            // Show the popup and overlay
+            document.getElementById('editPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
         }
 
         function closePopup() {
