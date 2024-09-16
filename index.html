@@ -5,125 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Task List</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #e2e2e2;
-        }
-        header {
-            background-color: #008080;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            color: white;
-        }
-        .logo {
-            height: 120px; /* Adjust the height as needed */
-            margin-right: 20px;
-        }
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin: 10px 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .card h3 {
-            margin: 0;
-            color: #333;
-        }
-        .card p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .card .label {
-            font-weight: bold;
-        }
-        form {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        input[type="text"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            flex: 1;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        /* Popup styles */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ccc;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            max-width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
-        }
-        .popup button {
-            margin-top: 10px;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
+        /* Add your existing styles here */
     </style>
 </head>
 <body>
     <header>
         <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
     </header>
-     <h1 style="text-align: center;">Corporate Communications - Employee Task List</h1>
+    <h1 style="text-align: center;">Corporate Communications - Employee Task List</h1>
     <div class="container">
         <form id="employeeForm">
             <label for="employeeID">Enter Employee ID:</label>
@@ -170,19 +59,9 @@
             }
 
             fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeID)}`)
-                .then(response => response.json())
+                .then(response => response.text()) // Change to text() if you expect HTML
                 .then(data => {
-                    const taskCards = data.tasks.map(task => `
-                        <div class="card">
-                            <h3>${task.title}</h3>
-                            <p><span class="label">Description:</span> ${task.description}</p>
-                            <p><span class="label">Start Date:</span> ${task.startDate}</p>
-                            <p><span class="label">End Date:</span> ${task.endDate}</p>
-                            <p><span class="label">Remarks:</span> ${task.remarks}</p>
-                            <button onclick="showEditPopup(${task.id})">Edit Task</button>
-                        </div>
-                    `).join('');
-                    document.getElementById('cardContainer').innerHTML = taskCards;
+                    document.getElementById('cardContainer').innerHTML = data;
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -191,20 +70,11 @@
         });
 
         function showEditPopup(taskId) {
-            // Fetch the details of the task to be edited
+            // Fetch the task details or use existing data
             fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5/${taskId}`)
-                .then(response => response.json())
-                .then(task => {
-                    const popupTaskList = document.getElementById('popupTaskList');
-                    popupTaskList.innerHTML = `
-                        <tr>
-                            <td>${task.description}</td>
-                            <td>${task.startDate}</td>
-                            <td>${task.endDate}</td>
-                            <td>${task.remarks}</td>
-                            <td><button onclick="editTask(${task.id})">Edit</button></td>
-                        </tr>
-                    `;
+                .then(response => response.text()) // Adjust to text() if the response is HTML
+                .then(data => {
+                    document.getElementById('popupTaskList').innerHTML = data; // Assuming data contains HTML
                     document.getElementById('editPopup').style.display = 'block';
                     document.getElementById('overlay').style.display = 'block';
                 })
@@ -216,11 +86,6 @@
         function closePopup() {
             document.getElementById('editPopup').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
-        }
-
-        function editTask(taskId) {
-            // Implement the logic to edit the task
-            alert(`Editing task with ID: ${taskId}`);
         }
     </script>
 </body>
