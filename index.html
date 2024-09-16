@@ -73,6 +73,50 @@
         button:hover {
             background-color: #45a049;
         }
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .popup button {
+            margin-top: 10px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
     </style>
 </head>
 <body>
@@ -91,6 +135,29 @@
         </div>
     </div>
 
+    <!-- Popup for editing tasks -->
+    <div id="editPopup" class="popup">
+        <h3>Edit Tasks</h3>
+        <table id="popupTable">
+            <thead>
+                <tr>
+                    <th>Task Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Remarks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="popupTaskList">
+                <!-- Tasks will be populated here -->
+            </tbody>
+        </table>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
+    <!-- Overlay for popup -->
+    <div id="overlay" class="overlay" onclick="closePopup()"></div>
+
     <script>
         document.getElementById('employeeForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -102,16 +169,59 @@
                 return;
             }
 
-            fetch(` https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeID)}`)
-                .then(response => response.text())
+            fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeID)}`)
+                .then(response => response.json())
                 .then(data => {
-                    document.getElementById('cardContainer').innerHTML = data;
+                    const taskCards = data.tasks.map(task => `
+                        <div class="card">
+                            <h3>${task.title}</h3>
+                            <p><span class="label">Description:</span> ${task.description}</p>
+                            <p><span class="label">Start Date:</span> ${task.startDate}</p>
+                            <p><span class="label">End Date:</span> ${task.endDate}</p>
+                            <p><span class="label">Remarks:</span> ${task.remarks}</p>
+                            <button onclick="showEditPopup(${task.id})">Edit Task</button>
+                        </div>
+                    `).join('');
+                    document.getElementById('cardContainer').innerHTML = taskCards;
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                     document.getElementById('cardContainer').innerHTML = '<p>Error fetching data. Please try again later.</p>';
                 });
         });
+
+        function showEditPopup(taskId) {
+            // Fetch the details of the task to be edited
+            fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5/${taskId}`)
+                .then(response => response.json())
+                .then(task => {
+                    const popupTaskList = document.getElementById('popupTaskList');
+                    popupTaskList.innerHTML = `
+                        <tr>
+                            <td>${task.description}</td>
+                            <td>${task.startDate}</td>
+                            <td>${task.endDate}</td>
+                            <td>${task.remarks}</td>
+                            <td><button onclick="editTask(${task.id})">Edit</button></td>
+                        </tr>
+                    `;
+                    document.getElementById('editPopup').style.display = 'block';
+                    document.getElementById('overlay').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching task details:', error);
+                });
+        }
+
+        function closePopup() {
+            document.getElementById('editPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function editTask(taskId) {
+            // Implement the logic to edit the task
+            alert(`Editing task with ID: ${taskId}`);
+        }
     </script>
 </body>
 </html>
