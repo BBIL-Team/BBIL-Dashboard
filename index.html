@@ -150,38 +150,62 @@
                 });
         });
 
-        function showEditPopup() {
-    // Get the rows in the cardContainer and prepare to create editable fields
+       function showEditPopup() {
+    // Get the rows in the cardContainer and prepare to create the popup content
     var cardContainer = document.getElementById('cardContainer');
     var rows = cardContainer.querySelectorAll('tr'); // Assuming tasks are in table rows
-    
-    var popupContent = '';
 
-    // Loop through each row and create input fields for Rate and Remarks
+    var popupContent = `
+        <table border="1" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Task Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Rate</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Loop through each row to create the popup table
     rows.forEach(row => {
         var cells = row.querySelectorAll('td');
-        if (cells.length >= 3) { // Assuming 'Rate' is the 2nd cell and 'Remarks' is the 3rd cell
-            var rate = cells[1].innerText; // Assuming 'Rate' is the 2nd cell
-            var remarks = cells[2].innerText; // Assuming 'Remarks' is the 3rd cell
-            
+
+        if (cells.length >= 3) { // Adjust based on your table's structure
+            var taskDescription = cells[0].innerText; // Assuming 'Task Description' is the 1st cell
+            var startDate = cells[1].innerText; // Assuming 'Start Date' is the 2nd cell
+            var endDate = cells[2].innerText; // Assuming 'End Date' is the 3rd cell
+            var rate = cells[3] ? cells[3].innerText : ''; // Assuming 'Rate' is the 4th cell
+            var remarks = cells[4] ? cells[4].innerText : ''; // Assuming 'Remarks' is the 5th cell
+
+            // Generate the popup table row
             popupContent += `
-                <div class="task-row">
-                    <label>Rate:</label>
-                    <input type="number" value="${rate}" />
-                    <label>Remarks:</label>
-                    <input type="text" value="${remarks}" />
-                </div>
+                <tr>
+                    <td>${taskDescription}</td>
+                    <td>${startDate}</td>
+                    <td>${endDate}</td>
+                    <td><input type="number" value="${rate}" /></td>
+                    <td><input type="text" value="${remarks}" /></td>
+                </tr>
             `;
         }
     });
 
-    // Insert the generated input fields into the popup
+    popupContent += `
+            </tbody>
+        </table>
+    `;
+
+    // Insert the generated table into the popup
     document.getElementById('popupContent').innerHTML = popupContent;
 
     // Show the popup and overlay
     document.getElementById('editPopup').style.display = 'block';
     document.getElementById('overlay').style.display = 'block';
 }
+
 
         function saveChanges() {
             // Logic to capture the updated values
