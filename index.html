@@ -3,24 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Task List</title>
+    <title>Employee Tasks</title>
     <style>
-        /* Styles for the page */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #e2e2e2;
-            margin: 0;
-            padding: 0;
-        }
-        header {
+         header {
             background-color: #008080;
             padding: 10px 20px;
             display: flex;
             align-items: center;
             color: white;
         }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .card h3 {
+            margin: 0;
+            color: #333;
+        }
+        .card p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .card .label {
+            font-weight: bold;
+        }
         .logo {
-            height: 120px;
+            height: 120px; /* Adjust the height as needed */
             margin-right: 20px;
         }
         .container {
@@ -31,51 +45,49 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
+        body {
+            font-family: Arial, sans-serif;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        form {
-            display: flex;
-            gap: 10px;
             margin-bottom: 20px;
         }
-        input[type="text"], input[type="number"] {
-            padding: 10px;
-            flex: 1;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        table, th, td {
+            border: 1px solid #ddd;
         }
-        button {
-            padding: 10px 20px;
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .button {
+            padding: 10px 15px;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
-        button:hover {
+        .button:hover {
             background-color: #45a049;
         }
+        /* Popup styles */
         .popup {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            border: 1px solid #ccc;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            max-width: 90%;
+        }
+        .popup button {
+            margin-top: 10px;
         }
         .overlay {
             display: none;
@@ -89,140 +101,183 @@
         }
     </style>
 </head>
-<body>
+<body onload="onLoadFunction()">
     <header>
         <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
     </header>
-    <h1 style="text-align: center;">Corporate Communications - Employee Task List</h1>
-    <div class="container">
-        <form id="employeeForm">
-            <label for="employeeID">Enter Employee ID:</label>
-            <input type="text" id="employeeID" name="employeeID" required>
-            <button type="submit">Fetch Tasks</button>
-        </form>
-        <div id="cardContainer">
+     <h1 style="text-align: center;">Ramita Task List</h1>
+    <div id="cardContainer">
             <!-- Task cards from Lambda will be inserted here -->
         </div>
-        <!-- Single Edit button -->
-        <button id="editButton" style="display:none;" onclick="showEditPopup()">Edit Tasks</button>
+
+    <br>
+    <button class="button" onclick="showAddPopup()">Add Task</button>
+    <button class="button" onclick="showRemovePopup()">Remove Task</button>
+
+    <!-- Popup for adding tasks -->
+    <div id="addPopup" class="popup">
+        <h3>Add New Task</h3>
+        <form id="taskForm" action="https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3" method="POST" enctype="application/x-www-form-urlencoded">
+            <label for="employeeName">Employee Name:</label>
+            <input type="text" id="employeeName" name="eName" value="Ramita" required><br><br>
+
+            <label for="taskDescription">Task:</label>
+            <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
+
+            <label for="StartDate">Start Date:</label>
+            <input type="date" id="StartDate" name="StartDate"><br><br>
+
+            <label for="EndDate">End Date:</label>
+            <input type="date" id="EndDate" name="EndDate"><br><br>
+
+            <label for="Remarks">Remarks:</label>
+            <input type="text" id="Remarks" name="Remarks"><br><br>
+
+            <button class="button" type="submit">Add</button>
+            <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
+        </form>
     </div>
 
-    <!-- Popup for editing tasks -->
-    <div id="editPopup" class="popup">
-        <h3>Edit Tasks</h3>
-        <div id="popupContent">
-            <!-- Content for popup will be inserted here -->
-        </div>
-        <button onclick="saveChanges()">Save</button>
-        <button onclick="closePopup()">Close</button>
+    <!-- Popup for removing tasks -->
+    <div id="removePopup" class="popup">
+        <h3>Remove Task</h3>
+        <table id="popupTable">
+            <thead></thead>
+            <tbody id="popupTaskList">
+                <!-- Tasks will be populated here -->
+            </tbody>
+        </table>
+        <button class="button" onclick="closePopup('removePopup')">Close</button>
     </div>
-    
+
     <!-- Overlay for popup -->
-    <div id="overlay" class="overlay" onclick="closePopup()"></div>
+    <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
+
+    <!-- Success message popup -->
+    <div id="messagePopup" class="popup">
+        <p id="messageContent"></p>
+        <button class="button" onclick="closePopup('messagePopup')">Close</button>
+    </div>
 
     <script>
-        document.getElementById('employeeForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+        function onLoadFunction() {
+            console.log("Page has loaded.");
+            fetchDataFromLambda();
+        }
 
-            var employeeID = document.getElementById('employeeID').value.trim();
+        function fetchDataFromLambda() {
+            const apiUrl = 'https://0cyyhx4ika.execute-api.ap-south-1.amazonaws.com/S1/deepshikatest123';
 
-            if (!employeeID) {
-                alert('Please enter an Employee ID.');
-                return;
-            }
-
-            fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeID)}`)
+            fetch(apiUrl)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('cardContainer').innerHTML = data;
-                    
-                    // Show the "Edit" button if there are tasks
-                    if (data.trim() !== '') {
-                        document.getElementById('editButton').style.display = 'block';
-                    } else {
-                        document.getElementById('editButton').style.display = 'none';
-                    }
+                    populatePopupTable();
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    document.getElementById('cardContainer').innerHTML = '<p>Error fetching data. Please try again later.</p>';
-                    document.getElementById('editButton').style.display = 'none';
+                    document.getElementById('cardContainer').innerHTML = 'Failed to load data.';
                 });
-        });
-
-       function showEditPopup() {
-    // Get the rows in the cardContainer and prepare to create the popup content
-    var cardContainer = document.getElementById('cardContainer');
-    var rows = cardContainer.querySelectorAll('tr'); // Assuming tasks are in table rows
-
-    var popupContent = `
-        <table border="1" style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>Task Description</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Rate</th>
-                    <th>Remarks</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    // Loop through each row to create the popup table
-    rows.forEach(row => {
-        var cells = row.querySelectorAll('td');
-
-        if (cells.length >= 3) { // Adjust based on your table's structure
-            var taskDescription = cells[0].innerText; // Assuming 'Task Description' is the 1st cell
-            var startDate = cells[1].innerText; // Assuming 'Start Date' is the 2nd cell
-            var endDate = cells[2].innerText; // Assuming 'End Date' is the 3rd cell
-            var rate = cells[3] ? cells[3].innerText : ''; // Assuming 'Rate' is the 4th cell
-            var remarks = cells[4] ? cells[4].innerText : ''; // Assuming 'Remarks' is the 5th cell
-
-            // Generate the popup table row
-            popupContent += `
-                <tr>
-                    <td>${taskDescription}</td>
-                    <td>${startDate}</td>
-                    <td>${endDate}</td>
-                    <td><input type="number" min="1" max="5" /></td>
-                    <td><input type="text"/></td>
-                </tr>
-            `;
         }
+
+        function showAddPopup() {
+            document.getElementById('addPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function showRemovePopup() {
+            document.getElementById('removePopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup(popupId) {
+            document.getElementById(popupId).style.display = 'none';
+            closeOverlay();
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        document.getElementById('taskForm').onsubmit = async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData).toString();
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    headers: {
+                        'Content-Type': form.enctype
+                    },
+                    body: params
+                });
+
+                const result = await response.json();
+                document.getElementById('messageContent').innerText = result.message;
+                document.getElementById('messagePopup').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+
+                closePopup('addPopup'); // Close the add task popup
+            } catch (error) {
+                document.getElementById('messageContent').innerText = 'Error: ' + error.message;
+                document.getElementById('messagePopup').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
+        };
+
+        function populatePopupTable() {
+    const tableBody = document.querySelector('#cardContainer table tbody');
+    const popupTaskList = document.getElementById('popupTaskList');
+
+    if (!tableBody) {
+        console.error('Table body not found.');
+        return;
+    }
+
+    popupTaskList.innerHTML = '';
+
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const clonedRow = row.cloneNode(true);
+        const removeButtonCell = document.createElement('td');
+
+        // Skip the remove button for the first row
+        if (index !== 0) {
+            removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index + 1})">X</button>`;
+        }
+
+        clonedRow.appendChild(removeButtonCell);
+        popupTaskList.appendChild(clonedRow);
     });
-
-    popupContent += `
-            </tbody>
-        </table>
-    `;
-
-    // Insert the generated table into the popup
-    document.getElementById('popupContent').innerHTML = popupContent;
-
-    // Show the popup and overlay
-    document.getElementById('editPopup').style.display = 'block';
-    document.getElementById('overlay').style.display = 'block';
 }
 
+        function removeTask(rowNumber) {
+            const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
 
-        function saveChanges() {
-            // Logic to capture the updated values
-            var popupContent = document.getElementById('popupContent');
-            var inputs = popupContent.querySelectorAll('input');
-
-            // Update the data in cardContainer with the new values
-            var updatedContent = popupContent.innerHTML;
-            document.getElementById('cardContainer').innerHTML = updatedContent;
-
-            // Close the popup
-            closePopup();
-        }
-
-        function closePopup() {
-            document.getElementById('editPopup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
+            fetch(apiUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rowNumber })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Task removed successfully');
+                    fetchDataFromLambda(); // Refresh the data after task removal
+                    closePopup('removePopup');
+                } else {
+                    alert('Error removing task: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error removing task:', error);
+                alert('Error removing task');
+            });
         }
     </script>
 </body>
