@@ -47,7 +47,7 @@
             gap: 10px;
             margin-bottom: 20px;
         }
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             padding: 10px;
             flex: 1;
             border: 1px solid #ccc;
@@ -113,6 +113,7 @@
         <div id="popupContent">
             <!-- Content for popup will be inserted here -->
         </div>
+        <button onclick="saveChanges()">Save</button>
         <button onclick="closePopup()">Close</button>
     </div>
     
@@ -150,13 +151,29 @@
         });
 
         function showEditPopup() {
-            // Copy the content of the cardContainer to the popup
+            // Get the task rows and create input fields for 'Rate' and 'Remarks' in the popup
             var taskContent = document.getElementById('cardContainer').innerHTML;
-            document.getElementById('popupContent').innerHTML = taskContent;
+            var popupContent = taskContent.replace(/<td>(.*?)<\/td><td>(.*?)<\/td>/g, function(match, rate, remarks) {
+                return `<td><input type="number" value="${rate}" /></td><td><input type="text" value="${remarks}" /></td>`;
+            });
+            document.getElementById('popupContent').innerHTML = popupContent;
 
             // Show the popup and overlay
             document.getElementById('editPopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
+        }
+
+        function saveChanges() {
+            // Logic to capture the updated values
+            var popupContent = document.getElementById('popupContent');
+            var inputs = popupContent.querySelectorAll('input');
+
+            // Update the data in cardContainer with the new values
+            var updatedContent = popupContent.innerHTML;
+            document.getElementById('cardContainer').innerHTML = updatedContent;
+
+            // Close the popup
+            closePopup();
         }
 
         function closePopup() {
