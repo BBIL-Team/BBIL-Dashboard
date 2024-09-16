@@ -5,14 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Task List</title>
     <style>
-        /* Add your existing styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e2e2e2;
+        }
+        header {
+            background-color: #008080;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+        .logo {
+            height: 120px; /* Adjust the height as needed */
+            margin-right: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .card h3 {
+            margin: 0;
+            color: #333;
+        }
+        .card p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .card .label {
+            font-weight: bold;
+        }
+        form {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex: 1;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <header>
         <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
     </header>
-    <h1 style="text-align: center;">Corporate Communications - Employee Task List</h1>
+     <h1 style="text-align: center;">Corporate Communications - Employee Task List</h1>
     <div class="container">
         <form id="employeeForm">
             <label for="employeeID">Enter Employee ID:</label>
@@ -23,7 +90,6 @@
             <!-- Task cards from Lambda will be inserted here -->
         </div>
     </div>
-
     <!-- Popup for editing tasks -->
     <div id="editPopup" class="popup">
         <h3>Edit Tasks</h3>
@@ -47,6 +113,7 @@
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
+
     <script>
         document.getElementById('employeeForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -59,7 +126,7 @@
             }
 
             fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeID)}`)
-                .then(response => response.text()) // Change to text() if you expect HTML
+                .then(response => response.text())
                 .then(data => {
                     document.getElementById('cardContainer').innerHTML = data;
                 })
@@ -68,7 +135,6 @@
                     document.getElementById('cardContainer').innerHTML = '<p>Error fetching data. Please try again later.</p>';
                 });
         });
-
         function showEditPopup(taskId) {
             // Fetch the task details or use existing data
             fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5/${taskId}`)
