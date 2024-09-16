@@ -151,17 +151,37 @@
         });
 
         function showEditPopup() {
-            // Get the task rows and create input fields for 'Rate' and 'Remarks' in the popup
-            var taskContent = document.getElementById('cardContainer').innerHTML;
-            var popupContent = taskContent.replace(/<td>(.*?)<\/td><td>(.*?)<\/td>/g, function(match, rate, remarks) {
-                return `<td><input type="number" value="${rate}" /></td><td><input type="text" value="${remarks}" /></td>`;
-            });
-            document.getElementById('popupContent').innerHTML = popupContent;
+    // Get the rows in the cardContainer and prepare to create editable fields
+    var cardContainer = document.getElementById('cardContainer');
+    var rows = cardContainer.querySelectorAll('tr'); // Assuming tasks are in table rows
+    
+    var popupContent = '';
 
-            // Show the popup and overlay
-            document.getElementById('editPopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
+    // Loop through each row and create input fields for Rate and Remarks
+    rows.forEach(row => {
+        var cells = row.querySelectorAll('td');
+        if (cells.length >= 3) { // Assuming 'Rate' is the 2nd cell and 'Remarks' is the 3rd cell
+            var rate = cells[1].innerText; // Assuming 'Rate' is the 2nd cell
+            var remarks = cells[2].innerText; // Assuming 'Remarks' is the 3rd cell
+            
+            popupContent += `
+                <div class="task-row">
+                    <label>Rate:</label>
+                    <input type="number" value="${rate}" />
+                    <label>Remarks:</label>
+                    <input type="text" value="${remarks}" />
+                </div>
+            `;
         }
+    });
+
+    // Insert the generated input fields into the popup
+    document.getElementById('popupContent').innerHTML = popupContent;
+
+    // Show the popup and overlay
+    document.getElementById('editPopup').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+}
 
         function saveChanges() {
             // Logic to capture the updated values
