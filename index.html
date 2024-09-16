@@ -19,7 +19,7 @@
             color: white;
         }
         .logo {
-            height: 120px; /* Adjust the height as needed */
+            height: 120px;
             margin-right: 20px;
         }
         .container {
@@ -39,17 +39,6 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-        }
-        .card h3 {
-            margin: 0;
-            color: #333;
-        }
-        .card p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .card .label {
-            font-weight: bold;
         }
         form {
             margin-bottom: 20px;
@@ -73,13 +62,34 @@
         button:hover {
             background-color: #45a049;
         }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 1000;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
     <header>
         <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
     </header>
-     <h1 style="text-align: center;">Corporate Communications - Employee Task List</h1>
+    <h1 style="text-align: center;">Corporate Communications - Employee Task List</h1>
     <div class="container">
         <form id="employeeForm">
             <label for="employeeID">Enter Employee ID:</label>
@@ -90,6 +100,7 @@
             <!-- Task cards from Lambda will be inserted here -->
         </div>
     </div>
+
     <!-- Popup for editing tasks -->
     <div id="editPopup" class="popup">
         <h3>Edit Tasks</h3>
@@ -113,7 +124,6 @@
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closePopup()"></div>
 
-
     <script>
         document.getElementById('employeeForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -135,12 +145,12 @@
                     document.getElementById('cardContainer').innerHTML = '<p>Error fetching data. Please try again later.</p>';
                 });
         });
+
         function showEditPopup(taskId) {
-            // Fetch the task details or use existing data
             fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5/${taskId}`)
-                .then(response => response.text()) // Adjust to text() if the response is HTML
+                .then(response => response.text())
                 .then(data => {
-                    document.getElementById('popupTaskList').innerHTML = data; // Assuming data contains HTML
+                    document.getElementById('popupTaskList').innerHTML = data;
                     document.getElementById('editPopup').style.display = 'block';
                     document.getElementById('overlay').style.display = 'block';
                 })
