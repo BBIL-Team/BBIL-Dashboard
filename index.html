@@ -27,22 +27,15 @@
             margin-top: 20px;
             border-collapse: collapse;
         }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
         th, td {
-            padding: 10px;
+            border: 1px solid #ddd;
+            padding: 8px;
             text-align: left;
         }
         th {
             background-color: #f2f2f2;
         }
-        #loading {
-            text-align: center;
-            display: none;
-        }
-        #noTasksMessage {
-            color: red;
+        #loading, #noTasksMessage {
             text-align: center;
             margin-top: 20px;
             display: none;
@@ -53,9 +46,7 @@
 
 <div class="container">
     <h1>Employee Task List</h1>
-
     <div id="loading">Loading tasks...</div>
-
     <table id="taskTable" style="display: none;">
         <thead>
             <tr>
@@ -69,38 +60,59 @@
         </thead>
         <tbody id="taskTableBody"></tbody>
     </table>
-
-    <div id="noTasksMessage">
-        No tasks found for the Employee ID.
-    </div>
+    <div id="noTasksMessage">No tasks found for this Employee ID.</div>
 </div>
 
 <script>
-    // Hardcoded employee ID, you can replace this value or dynamically set it
-    const employeeId = '10005315'; // Replace with the employee ID you want to load by default
+    // Hardcoded employee ID (you can replace it dynamically)
+    const employeeId = '10005315';
 
-    // Automatically fetch tasks when the page loads
     window.onload = function() {
-        fetchTasksForEmployee(employeeId);
+        fetchTasks(employeeId);
     };
 
-                fetch(`https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeID)}`)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('cardContainer').innerHTML = data;
-                    
-                    // Show the "Edit" button if there are tasks
-                    if (data.trim() !== '') {
-                        document.getElementById('editButton').style.display = 'block';
-                    } else {
-                        document.getElementById('editButton').style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('cardContainer').innerHTML = '<p>Error fetching data. Please try again later.</p>';
-                    document.getElementById('editButton').style.display = 'none';
-                });
+    function fetchTasks(employeeId) {
+        const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
+        const loadingMessage = document.getElementById('loading');
+        const taskTable = document.getElementById('taskTable');
+        const taskTableBody = document.getElementById('taskTableBody');
+        const noTasksMessage = document.getElementById('noTasksMessage');
+
+        loadingMessage.style.display = 'block'; // Show loading
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                loadingMessage.style.display = 'none'; // Hide loading
+
+                if (data.length > 0) {
+                    taskTableBody.innerHTML = ''; // Clear previous rows
+                    data.forEach(task => {
+                        const row = `
+                            <tr>
+                                <td>${task.EmployeeID}</td>
+                                <td>${task.Task}</td>
+                                <td>${task.StartDate}</td>
+                                <td>${task.EndDate}</td>
+                                <td>${task.Rate}</td>
+                                <td>${task.Remarks}</td>
+                            </tr>
+                        `;
+                        taskTableBody.innerHTML += row;
+                    });
+                    taskTable.style.display = 'table'; // Show table
+                    noTasksMessage.style.display = 'none'; // Hide no tasks message
+                } else {
+                    taskTable.style.display = 'none'; // Hide table
+                    noTasksMessage.style.display = 'block'; // Show no tasks message
+                }
+            })
+            .catch(error => {
+                loadingMessage.innerHTML = 'Error loading tasks. Please try again.';
+                console.error('Error fetching tasks:', error);
+            });
+    }
 </script>
+
 </body>
 </html>
