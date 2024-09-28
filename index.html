@@ -88,7 +88,7 @@
             No tasks found for the Employee ID.
         </div>
         <button id="editButton" style="display:none;" onclick="showEditPopup()">Add Task</button>
-        <button id="editButton" style="display:none;" onclick="showEditPopup()">Remove Task</button>
+        <button id="editButton1" style="display:none;" onclick="showEditPopup()">Remove Task</button>
     </div>
 
     <script>
@@ -113,10 +113,12 @@
                     if (data.trim() !== '') {
                         cardContainer.innerHTML = data; // Insert the HTML response directly
                         document.getElementById('editButton').style.display = 'block'; // Show the "Add Task" button
+                        document.getElementById('editButton1').style.display = 'block'; // Show the "Remove Task" button
                     } else {
                         cardContainer.innerHTML = ''; // Clear previous data
                         document.getElementById('noTasksMessage').style.display = 'block'; // Show no tasks message
                         document.getElementById('editButton').style.display = 'none'; // Hide the "Add Task" button
+                        document.getElementById('editButton1').style.display = 'none'; // Hide the "Remove Task" button
                     }
                 })
                 .catch(error => {
