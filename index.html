@@ -6,12 +6,12 @@
     <title>Employee Task List</title>
     <style>
        header {
-    background-color: #008080;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    color: white;
-}
+            background-color: #008080;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
 
         .logo {
             height: 120px; /* Adjust the height as needed */
@@ -25,7 +25,7 @@
         h1 {
             text-align: center;
         }
-         .container {
+        .container {
             max-width: 900px;
             margin: 20px auto;
             background: white;
@@ -47,7 +47,7 @@
             margin-top: 20px;
             display: none;
         }
-                table {
+        table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
@@ -70,8 +70,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
-
     </style>
 </head>
 <body>
@@ -79,59 +77,57 @@
         <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
     </header>
 
-<div class="container">
-    <h1>Employee Task List</h1>
+    <div class="container">
+        <h1>Employee Task List</h1>
 
-    <div id="loading">Loading tasks...</div>
+        <div id="loading">Loading tasks...</div>
 
-    <div id="cardContainer"></div> <!-- This will display the HTML table returned from API -->
+        <div id="cardContainer"></div> <!-- This will display the HTML table returned from API -->
 
-    <div id="noTasksMessage">
-        No tasks found for the Employee ID.
+        <div id="noTasksMessage">
+            No tasks found for the Employee ID.
+        </div>
+        <button id="editButton" style="display:none;" onclick="showEditPopup()">Add Task</button>
     </div>
-    <button id="editButton" style="display:none;" onclick="showEditPopup()">Add Task</button>
-</div>
 
-<script>
-    // Hardcoded employee ID, you can replace this value or dynamically set it
-    const employeeId = '10005315'; // Replace with the employee ID you want to load by default
+    <script>
+        // Hardcoded employee ID, you can replace this value or dynamically set it
+        const employeeId = '10005315'; // Replace with the employee ID you want to load by default
 
-    // Automatically fetch tasks when the page loads
-    window.onload = function() {
-        fetchTasksForEmployee(employeeId);
-    };
+        // Automatically fetch tasks when the page loads
+        window.onload = function() {
+            fetchTasksForEmployee(employeeId);
+        };
 
-    function fetchTasksForEmployee(employeeId) {
-        const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
-        document.getElementById('loading').style.display = 'block'; // Show loading message
+        function fetchTasksForEmployee(employeeId) {
+            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
+            document.getElementById('loading').style.display = 'block'; // Show loading message
 
-        fetch(apiUrl)
-            .then(response => response.text()) // We expect HTML, so use .text()
-            .then(data => {
-                document.getElementById('loading').style.display = 'none'; // Hide loading message
-                const cardContainer = document.getElementById('cardContainer');
-                
-                if (data.trim() !== '') {
-                    cardContainer.innerHTML = data; // Insert the HTML response directly
-                } else {
-                    cardContainer.innerHTML = ''; // Clear previous data
-                    document.getElementById('noTasksMessage').style.display = 'block'; // Show no tasks message
-                }
-            })
-             // Show the "Add Task" button if there are tasks
+            fetch(apiUrl)
+                .then(response => response.text()) // We expect HTML, so use .text()
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none'; // Hide loading message
+                    const cardContainer = document.getElementById('cardContainer');
+                    
                     if (data.trim() !== '') {
-                        document.getElementById('editButton').style.display = 'block';
+                        cardContainer.innerHTML = data; // Insert the HTML response directly
+                        document.getElementById('editButton').style.display = 'block'; // Show the "Add Task" button
                     } else {
-                        document.getElementById('editButton').style.display = 'none';
+                        cardContainer.innerHTML = ''; // Clear previous data
+                        document.getElementById('noTasksMessage').style.display = 'block'; // Show no tasks message
+                        document.getElementById('editButton').style.display = 'none'; // Hide the "Add Task" button
                     }
-                }
+                })
+                .catch(error => {
+                    console.error('Error fetching tasks:', error);
+                    document.getElementById('loading').innerHTML = 'Error loading tasks. Please try again later.';
+                });
+        }
 
-            .catch(error => {
-                console.error('Error fetching tasks:', error);
-                document.getElementById('loading').innerHTML = 'Error loading tasks. Please try again later.';
-            });
-    }
-</script>
+        function showEditPopup() {
+            alert('Add Task functionality coming soon!');
+        }
+    </script>
 
 </body>
 </html>
