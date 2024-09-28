@@ -70,9 +70,33 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .button:hover {
-            background-color: #45a049;
+    /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
         }
+        .popup button {
+            margin-top: 10px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
     </style>
 </head>
 <body>
@@ -95,7 +119,8 @@
             <button id="editButton" class="button" style="margin-right: 10px;" onclick="showAddPopup()">Add Task</button>
             <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
         </div>
-    <!-- Popup for adding tasks -->
+    
+        <!-- Popup for adding tasks -->
     <div id="addPopup" class="popup">
         <h3>Add New Task</h3>
         <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
