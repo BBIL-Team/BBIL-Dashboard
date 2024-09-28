@@ -22,20 +22,15 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        table {
-            width: 100%;
+        #loading {
+            text-align: center;
+            display: none;
+        }
+        #cardContainer {
             margin-top: 20px;
-            border-collapse: collapse;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        #loading, #noTasksMessage {
+        #noTasksMessage {
+            color: red;
             text-align: center;
             margin-top: 20px;
             display: none;
@@ -46,70 +41,45 @@
 
 <div class="container">
     <h1>Employee Task List</h1>
+
     <div id="loading">Loading tasks...</div>
-    <table id="taskTable" style="display: none;">
-        <thead>
-            <tr>
-                <th>Employee ID</th>
-                <th>Task</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Rate</th>
-                <th>Remarks</th>
-            </tr>
-        </thead>
-        <tbody id="taskTableBody"></tbody>
-    </table>
-    <div id="noTasksMessage">No tasks found for this Employee ID.</div>
+
+    <div id="cardContainer"></div> <!-- This will display the HTML table returned from API -->
+
+    <div id="noTasksMessage">
+        No tasks found for the Employee ID.
+    </div>
 </div>
 
 <script>
-    // Hardcoded employee ID (you can replace it dynamically)
-    const employeeId = '10005315';
+    // Hardcoded employee ID, you can replace this value or dynamically set it
+    const employeeId = '10005315'; // Replace with the employee ID you want to load by default
 
+    // Automatically fetch tasks when the page loads
     window.onload = function() {
-        fetchTasks(employeeId);
+        fetchTasksForEmployee(employeeId);
     };
 
-    function fetchTasks(employeeId) {
+    function fetchTasksForEmployee(employeeId) {
         const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
-        const loadingMessage = document.getElementById('loading');
-        const taskTable = document.getElementById('taskTable');
-        const taskTableBody = document.getElementById('taskTableBody');
-        const noTasksMessage = document.getElementById('noTasksMessage');
-
-        loadingMessage.style.display = 'block'; // Show loading
+        document.getElementById('loading').style.display = 'block'; // Show loading message
 
         fetch(apiUrl)
-            .then(response => response.json())
+            .then(response => response.text()) // We expect HTML, so use .text()
             .then(data => {
-                loadingMessage.style.display = 'none'; // Hide loading
-
-                if (data.length > 0) {
-                    taskTableBody.innerHTML = ''; // Clear previous rows
-                    data.forEach(task => {
-                        const row = `
-                            <tr>
-                                <td>${task.EmployeeID}</td>
-                                <td>${task.Task}</td>
-                                <td>${task.StartDate}</td>
-                                <td>${task.EndDate}</td>
-                                <td>${task.Rate}</td>
-                                <td>${task.Remarks}</td>
-                            </tr>
-                        `;
-                        taskTableBody.innerHTML += row;
-                    });
-                    taskTable.style.display = 'table'; // Show table
-                    noTasksMessage.style.display = 'none'; // Hide no tasks message
+                document.getElementById('loading').style.display = 'none'; // Hide loading message
+                const cardContainer = document.getElementById('cardContainer');
+                
+                if (data.trim() !== '') {
+                    cardContainer.innerHTML = data; // Insert the HTML response directly
                 } else {
-                    taskTable.style.display = 'none'; // Hide table
-                    noTasksMessage.style.display = 'block'; // Show no tasks message
+                    cardContainer.innerHTML = ''; // Clear previous data
+                    document.getElementById('noTasksMessage').style.display = 'block'; // Show no tasks message
                 }
             })
             .catch(error => {
-                loadingMessage.innerHTML = 'Error loading tasks. Please try again.';
                 console.error('Error fetching tasks:', error);
+                document.getElementById('loading').innerHTML = 'Error loading tasks. Please try again later.';
             });
     }
 </script>
