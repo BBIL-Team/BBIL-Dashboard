@@ -95,6 +95,28 @@
             <button id="editButton" class="button" style="margin-right: 10px;" onclick="showAddPopup()">Add Task</button>
             <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
         </div>
+    <!-- Popup for adding tasks -->
+    <div id="addPopup" class="popup">
+        <h3>Add New Task</h3>
+        <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
+            <label for="employeeName">Employee Name:</label>
+            <input type="text" id="employeeName" name="eName" value="Ramita" required><br><br>
+
+            <label for="taskDescription">Task:</label>
+            <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
+
+            <label for="StartDate">Start Date:</label>
+            <input type="date" id="StartDate" name="StartDate"><br><br>
+
+            <label for="EndDate">End Date:</label>
+            <input type="date" id="EndDate" name="EndDate"><br><br>
+
+            <label for="Remarks">Remarks:</label>
+            <input type="text" id="Remarks" name="Remarks"><br><br>
+
+            <button class="button" type="submit">Add</button>
+            <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
+        </form>
     </div>
 
     <script>
