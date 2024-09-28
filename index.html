@@ -62,6 +62,15 @@
         th {
             background-color: #f4f4f4;
         }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
 
     </style>
 </head>
@@ -80,6 +89,7 @@
     <div id="noTasksMessage">
         No tasks found for the Employee ID.
     </div>
+    <button id="editButton" style="display:none;" onclick="showEditPopup()">Add Task</button>
 </div>
 
 <script>
