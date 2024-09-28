@@ -70,7 +70,9 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
+        .button:hover {
+            background-color: #45a049;
+        }
 </style>
 </head>
 <body>
@@ -88,11 +90,9 @@
         <div id="noTasksMessage">
             No tasks found for the Employee ID.
         </div>
-        <div id="buttonContainer" style="display: flex; justify-content: center; margin-top: 20px;">
-    <button id="editButton" style="display:none; margin-right: 10px;" onclick="showEditPopup()">Add Task</button>
-    <button id="editButton1" style="display:none;" onclick="showEditPopup()">Remove Task</button>
-</div>
-
+        <br>
+    <button id="editButton" class="button" onclick="showAddPopup()">Add Task</button>
+    <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
     </div>
 
     <script>
