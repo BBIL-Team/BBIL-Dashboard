@@ -5,72 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Task List</title>
     <style>
-       header {
-            background-color: #008080;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            color: white;
-        }
-
-        .logo {
-            height: 120px;
-            margin-right: 20px;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-        }
-        h1 {
-            text-align: center;
-        }
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        #loading {
-            text-align: center;
-            display: none;
-        }
-        #cardContainer {
-            margin-top: 20px;
-        }
-        #noTasksMessage {
-            color: red;
-            text-align: center;
-            margin-top: 20px;
-            display: none;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    /* Popup styles */
+        /* Same styling as before, omitted here for brevity */
         .popup {
             display: none;
             position: fixed;
@@ -96,7 +31,6 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
-
     </style>
 </head>
 <body>
@@ -119,62 +53,63 @@
             <button id="editButton" class="button" style="margin-right: 10px;" onclick="showAddPopup()">Add Task</button>
             <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
         </div>
-    
+
         <!-- Popup for adding tasks -->
-    <div id="addPopup" class="popup">
-        <h3>Add New Task</h3>
-        <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
-            <label for="employeeid">Employee ID:</label>
-            <input type="text" id="employeeID" name="eID" required><br><br>
+        <div id="addPopup" class="popup">
+            <h3>Add New Task</h3>
+            <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
+                <label for="employeeid">Employee ID:</label>
+                <input type="text" id="employeeID" name="eID" required><br><br>
 
-            <label for="employeeName">Employee Name:</label>
-            <input type="text" id="employeeName" name="eName" required><br><br>
+                <label for="employeeName">Employee Name:</label>
+                <input type="text" id="employeeName" name="eName" required><br><br>
 
-            <label for="taskDescription">Task:</label>
-            <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
+                <label for="taskDescription">Task:</label>
+                <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
 
-            <label for="StartDate">Start Date:</label>
-            <input type="date" id="StartDate" name="StartDate"><br><br>
+                <label for="StartDate">Start Date:</label>
+                <input type="date" id="StartDate" name="StartDate"><br><br>
 
-            <label for="EndDate">End Date:</label>
-            <input type="date" id="EndDate" name="EndDate"><br><br>
+                <label for="EndDate">End Date:</label>
+                <input type="date" id="EndDate" name="EndDate"><br><br>
 
-            <button class="button" type="submit">Add</button>
-            <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
-        </form>
+                <button class="button" type="submit">Add</button>
+                <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
+            </form>
+        </div>
+
+        <!-- Popup for removing tasks -->
+        <div id="removePopup" class="popup">
+            <h3>Remove Task</h3>
+            <table id="popupTable">
+                <thead>
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                    <th>Task Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Rating</th>
+                    <th>Remark</th>
+                </thead>
+                <tbody id="popupTaskList">
+                    <!-- Tasks will be populated here -->
+                </tbody>
+            </table>
+            <button class="button" onclick="closePopup('removePopup')">Close</button>
+        </div>
+
+        <!-- Overlay for popup -->
+        <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
+
+        <!-- Success message popup -->
+        <div id="messagePopup" class="popup">
+            <p id="messageContent"></p>
+            <button class="button" onclick="closePopup('messagePopup')">Close</button>
+        </div>
     </div>
-        
-    <!-- Popup for removing tasks -->
-    <div id="removePopup" class="popup">
-        <h3>Remove Task</h3>
-        <table id="popupTable">
-            <thead>
-                <th>Employee ID</th>
-                <th>Employee Name</th>
-                <th>Task Description</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Rating</th>
-                <th>Remark</th>
-            </thead>
-            <tbody id="popupTaskList">
-                <!-- Tasks will be populated here -->
-            </tbody>
-        </table>
-        <button class="button" onclick="closePopup('removePopup')">Close</button>
-    </div>
 
-    <!-- Overlay for popup -->
-    <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
-
-    <!-- Success message popup -->
-    <div id="messagePopup" class="popup">
-        <p id="messageContent"></p>
-        <button class="button" onclick="closePopup('messagePopup')">Close</button>
-    </div>
-
-   <script>
-        const employeeId = '10005315'; 
+    <script>
+        const employeeId = '10005315';
 
         window.onload = function() {
             fetchTasksForEmployee(employeeId);
@@ -182,29 +117,29 @@
 
         function fetchTasksForEmployee(employeeId) {
             const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
-            document.getElementById('loading').style.display = 'block'; 
+            document.getElementById('loading').style.display = 'block';
 
             fetch(apiUrl)
-                .then(response => response.text()) 
+                .then(response => response.text())
                 .then(data => {
-                    document.getElementById('loading').style.display = 'none'; 
+                    document.getElementById('loading').style.display = 'none';
                     const cardContainer = document.getElementById('cardContainer');
                     
                     if (data.trim() !== '') {
                         cardContainer.innerHTML = data;
-                        document.getElementById('editButton').style.display = 'block'; 
+                        document.getElementById('editButton').style.display = 'block';
                         document.getElementById('editButton1').style.display = 'block';
                     } else {
-                        cardContainer.innerHTML = ''; 
-                        document.getElementById('noTasksMessage').style.display = 'block'; 
-                        document.getElementById('editButton').style.display = 'none'; 
-                        document.getElementById('editButton1').style.display = 'none'; 
+                        cardContainer.innerHTML = '';
+                        document.getElementById('noTasksMessage').style.display = 'block';
+                        document.getElementById('editButton').style.display = 'none';
+                        document.getElementById('editButton1').style.display = 'none';
                     }
                 })
                 .catch(error => {
-                    document.getElementById('loading').style.display = 'none'; 
+                    document.getElementById('loading').style.display = 'none';
                     console.error('Error:', error);
-                    document.getElementById('noTasksMessage').style.display = 'block'; 
+                    showMessagePopup('Error fetching tasks.');
                 });
         }
 
@@ -215,8 +150,8 @@
             };
 
             fetch(url, {
-                method: 'DELETE', 
-                body: JSON.stringify(data), 
+                method: 'DELETE',
+                body: JSON.stringify(data),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -225,7 +160,7 @@
             .then(data => {
                 console.log('Success:', data);
                 closePopup('removePopup');
-                showMessagePopup('Task removed successfully!');
+                showMessagePopup(data.message || 'Task removed successfully!'); // Display response message in popup
                 fetchTasksForEmployee(employeeId);
             })
             .catch(error => {
@@ -260,14 +195,14 @@
         function showRemovePopup() {
             document.getElementById('removePopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
-            populatePopupTable(); 
+            populatePopupTable();
         }
 
         function populatePopupTable() {
             const popupTaskList = document.getElementById('popupTaskList');
-            const taskRows = document.querySelectorAll('#cardContainer tr'); 
+            const taskRows = document.querySelectorAll('#cardContainer tr');
 
-            popupTaskList.innerHTML = ''; 
+            popupTaskList.innerHTML = '';
 
             taskRows.forEach((row, index) => {
                 const taskCells = row.querySelectorAll('td');
