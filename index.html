@@ -177,28 +177,34 @@
             const apiUrl = 'https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}';
             document.getElementById('loading').style.display = 'block'; // Show loading message
 
-            fetch(apiUrl)
-                .then(response => response.text()) // We expect HTML, so use .text()
-                .then(data => {
-                    document.getElementById('loading').style.display = 'none'; // Hide loading message
-                    const cardContainer = document.getElementById('cardContainer');
-                    
-                    if (data.trim() !== '') {
-                        cardContainer.innerHTML = data; // Insert the HTML response directly
-                        document.getElementById('editButton').style.display = 'block'; // Show the "Add Task" button
-                        document.getElementById('editButton1').style.display = 'block'; // Show the "Remove Task" button
-                    } else {
-                        cardContainer.innerHTML = ''; // Clear previous data
-                        document.getElementById('noTasksMessage').style.display = 'block'; // Show no tasks message
-                        document.getElementById('editButton').style.display = 'none'; // Hide the "Add Task" button
-                        document.getElementById('editButton1').style.display = 'none'; // Hide the "Remove Task" button
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching tasks:', error);
-                    document.getElementById('loading').innerHTML = 'Error loading tasks. Please try again later.';
-                });
+          fetch(apiUrl)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
         }
+        return response.text();
+    })
+    .then(data => {
+        console.log('Fetched data:', data); // Log the fetched data for debugging
+        document.getElementById('loading').style.display = 'none';
+        const cardContainer = document.getElementById('cardContainer');
+
+        if (data.trim() !== '') {
+            cardContainer.innerHTML = data; // Insert the HTML response directly
+            document.getElementById('editButton').style.display = 'block';
+            document.getElementById('editButton1').style.display = 'block';
+        } else {
+            cardContainer.innerHTML = '';
+            document.getElementById('noTasksMessage').style.display = 'block';
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('editButton1').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching tasks:', error);
+        document.getElementById('loading').innerHTML = 'Error loading tasks. Please try again later.';
+    });
+
 
               function showAddPopup() {
             document.getElementById('addPopup').style.display = 'block';
