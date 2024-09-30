@@ -143,11 +143,12 @@
             <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
         </form>
     </div>
-        <div id="removePopup" class="popup">
-    <h3>Remove Task</h3>
-    <table id="popupTable">
-        <thead>
-            <tr>
+        
+            <!-- Popup for removing tasks -->
+    <div id="removePopup" class="popup">
+        <h3>Remove Task</h3>
+        <table id="popupTable">
+            <thead>
                 <th>Employee ID</th>
                 <th>Employee Name</th>
                 <th>Task Description</th>
@@ -155,15 +156,13 @@
                 <th>End Date</th>
                 <th>Rating</th>
                 <th>Remark</th>
-            </tr>
-        </thead>
-        <tbody id="popupTaskList">
-            <!-- Tasks will be populated here -->
-        </tbody>
-    </table>
-    <button class="button" onclick="closePopup('removePopup')">Close</button>
-</div>
-
+            </thead>
+            <tbody id="popupTaskList">
+                <!-- Tasks will be populated here -->
+            </tbody>
+        </table>
+        <button class="button" onclick="closePopup('removePopup')">Close</button>
+    </div>
 
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
@@ -183,7 +182,7 @@
         };
 
         function fetchTasksForEmployee(employeeId) {
-            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
+            const apiUrl = https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)};
             document.getElementById('loading').style.display = 'block'; // Show loading message
 
             fetch(apiUrl)
@@ -284,6 +283,7 @@
         popupTaskList.appendChild(clonedRow);
     });
 }
+
         function removeTask(rowNumber) {
             const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
 
@@ -310,7 +310,5 @@
             });
         }
     </script>
-
-
 </body>
 </html>
