@@ -288,34 +288,32 @@ function populatePopupTable() {
         popupTaskList.appendChild(clonedRow);
     });
 }
+function removeTask(employeeName, taskDescription) {
+    const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
 
-
-
-        function removeTask(rowNumber) {
-            const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
-
-            fetch(apiUrl, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ rowNumber })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Task removed successfully');
-                    fetchDataFromLambda(); // Refresh the data after task removal
-                    closePopup('removePopup');
-                } else {
-                    alert('Error removing task: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error removing task:', error);
-                alert('Error removing task');
-            });
+    fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ employeeName, taskDescription })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Task removed successfully');
+            fetchDataFromLambda(); // Refresh the data after task removal
+            closePopup('removePopup');
+        } else {
+            alert('Error removing task: ' + data.error);
         }
+    })
+    .catch(error => {
+        console.error('Error removing task:', error);
+        alert('Error removing task');
+    });
+}
+
     </script>
 </body>
 </html>
