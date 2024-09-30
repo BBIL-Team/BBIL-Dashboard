@@ -235,11 +235,11 @@
         }
 
         function showMessagePopup(message) {
-            const messagePopup = document.getElementById('messagePopup');
-            document.getElementById('messageContent').textContent = message;
-            messagePopup.style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
+        const messagePopup = document.getElementById('messagePopup');
+        document.getElementById('messageContent').textContent = message;
+        messagePopup.style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
 
         function closePopup(popupId) {
             document.getElementById(popupId).style.display = 'none';
