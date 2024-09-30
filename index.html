@@ -121,7 +121,7 @@
         <!-- Popup for adding tasks -->
         <div id="addPopup" class="popup">
             <h3>Add New Task</h3>
-            <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
+            <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded" onsubmit="handleAddTask(event)">
                 <label for="employeeid">Employee ID:</label>
                 <input type="text" id="employeeID" name="eID" required><br><br>
 
@@ -208,6 +208,27 @@
                 });
         }
 
+        function handleAddTask(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const apiUrl = event.target.action;
+
+            fetch(apiUrl, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                showMessagePopup(data.message || 'Task added successfully!');
+                closePopup('addPopup');
+                fetchTasksForEmployee(employeeId);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessagePopup('Error adding task.');
+            });
+        }
+
         function removeTask(rowNumber) {
             const url = 'https://your-remove-api-endpoint'; 
             const data = {
@@ -235,11 +256,10 @@
         }
 
         function showMessagePopup(message) {
-        const messagePopup = document.getElementById('messagePopup');
-        document.getElementById('messageContent').textContent = message;
-        messagePopup.style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
+            document.getElementById('messageContent').innerText = message;
+            document.getElementById('messagePopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
 
         function closePopup(popupId) {
             document.getElementById(popupId).style.display = 'none';
@@ -247,9 +267,9 @@
         }
 
         function closeOverlay() {
-            const activePopups = document.querySelectorAll('.popup');
-            activePopups.forEach(popup => popup.style.display = 'none');
-            document.getElementById('overlay').style.display = 'none';
+            closePopup('addPopup');
+            closePopup('removePopup');
+            closePopup('messagePopup');
         }
 
         function showAddPopup() {
@@ -260,33 +280,6 @@
         function showRemovePopup() {
             document.getElementById('removePopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
-            populatePopupTable();
-        }
-
-        function populatePopupTable() {
-            const popupTaskList = document.getElementById('popupTaskList');
-            const taskRows = document.querySelectorAll('#cardContainer tr');
-
-            popupTaskList.innerHTML = '';
-
-            taskRows.forEach((row, index) => {
-                const taskCells = row.querySelectorAll('td');
-                if (taskCells.length === 7) {
-                    const popupRow = document.createElement('tr');
-                    
-                    taskCells.forEach(cell => {
-                        const popupCell = document.createElement('td');
-                        popupCell.textContent = cell.textContent;
-                        popupRow.appendChild(popupCell);
-                    });
-
-                    const removeButtonCell = document.createElement('td');
-                    removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index + 1})">X</button>`;
-                    popupRow.appendChild(removeButtonCell);
-
-                    popupTaskList.appendChild(popupRow);
-                }
-            });
         }
     </script>
 </body>
