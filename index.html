@@ -265,7 +265,7 @@
                 document.getElementById('messagePopup').style.display = 'block';
             }
         };
-  function populatePopupTable() {
+function populatePopupTable() {
     const tableBody = document.querySelector('#cardContainer table tbody');
     const popupTaskList = document.getElementById('popupTaskList');
 
@@ -283,13 +283,14 @@
 
         // Skip the remove button for the first row
         if (index !== 0) {
-            removeButtonCell.innerHTML = '<button class="button" onclick="removeTask(${index + 1})">X</button>';
+            removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index + 1})">X</button>`;
         }
 
         clonedRow.appendChild(removeButtonCell);
         popupTaskList.appendChild(clonedRow);
     });
 }
+
 
         function removeTask(rowNumber) {
             const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
