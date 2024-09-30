@@ -3,39 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Tasks</title>
+    <title>Employee Task List</title>
     <style>
-         header {
+       header {
             background-color: #008080;
             padding: 10px 20px;
             display: flex;
             align-items: center;
             color: white;
         }
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin: 10px 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .card h3 {
-            margin: 0;
-            color: #333;
-        }
-        .card p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .card .label {
-            font-weight: bold;
-        }
+
         .logo {
             height: 120px; /* Adjust the height as needed */
             margin-right: 20px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
         }
         .container {
             max-width: 900px;
@@ -45,8 +33,19 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
-        body {
-            font-family: Arial, sans-serif;
+
+        #loading {
+            text-align: center;
+            display: none;
+        }
+        #cardContainer {
+            margin-top: 20px;
+        }
+        #noTasksMessage {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
         }
         table {
             width: 100%;
@@ -63,41 +62,13 @@
         th {
             background-color: #f4f4f4;
         }
-        .button {
-            padding: 10px 15px;
+        button {
+            padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
+            border-radius: 4px;
             cursor: pointer;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        /* Popup styles */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ccc;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        .popup button {
-            margin-top: 10px;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
         }
     </style>
 </head>
@@ -113,174 +84,50 @@
 
         <div id="cardContainer"></div> <!-- This will display the HTML table returned from API -->
 
-        <div id="buttonContainer" style="display: flex;  margin-top: 20px;">
-            <button id="editButton" class="button" style="margin-right: 10px;" onclick="showAddPopup()">Add Task</button>
-            <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
+        <div id="noTasksMessage">
+            No tasks found for the Employee ID.
         </div>
-
-        <!-- Popup for adding tasks -->
-        <div id="addPopup" class="popup">
-            <h3>Add New Task</h3>
-            <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded" onsubmit="handleAddTask(event)">
-                <label for="employeeid">Employee ID:</label>
-                <input type="text" id="employeeID" name="eID" required><br><br>
-
-                <label for="employeeName">Employee Name:</label>
-                <input type="text" id="employeeName" name="eName" required><br><br>
-
-                <label for="taskDescription">Task:</label>
-                <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
-
-                <label for="StartDate">Start Date:</label>
-                <input type="date" id="StartDate" name="StartDate"><br><br>
-
-                <label for="EndDate">End Date:</label>
-                <input type="date" id="EndDate" name="EndDate"><br><br>
-
-                <button class="button" type="submit">Add</button>
-                <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
-            </form>
-        </div>
-
-        <!-- Popup for removing tasks -->
-        <div id="removePopup" class="popup">
-            <h3>Remove Task</h3>
-            <table id="popupTable">
-                <thead>
-                    <th>Employee ID</th>
-                    <th>Employee Name</th>
-                    <th>Task Description</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Rating</th>
-                    <th>Remark</th>
-                </thead>
-                <tbody id="popupTaskList">
-                    <!-- Tasks will be populated here -->
-                </tbody>
-            </table>
-            <button class="button" onclick="closePopup('removePopup')">Close</button>
-        </div>
-
-        <!-- Overlay for popup -->
-        <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
-
-        <!-- Success message popup -->
-        <div id="messagePopup" class="popup">
-            <p id="messageContent"></p>
-            <button class="button" onclick="closePopup('messagePopup')">Close</button>
-        </div>
+        <button id="editButton" style="display:none;" onclick="showEditPopup()">Add Task</button>
     </div>
 
-
     <script>
-        const employeeId = '10005315';
+        // Hardcoded employee ID, you can replace this value or dynamically set it
+        const employeeId = '10005315'; // Replace with the employee ID you want to load by default
 
+        // Automatically fetch tasks when the page loads
         window.onload = function() {
             fetchTasksForEmployee(employeeId);
         };
 
         function fetchTasksForEmployee(employeeId) {
             const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
-            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading').style.display = 'block'; // Show loading message
 
             fetch(apiUrl)
-                .then(response => response.text())
+                .then(response => response.text()) // We expect HTML, so use .text()
                 .then(data => {
-                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('loading').style.display = 'none'; // Hide loading message
                     const cardContainer = document.getElementById('cardContainer');
                     
                     if (data.trim() !== '') {
-                        cardContainer.innerHTML = data;
-                        document.getElementById('editButton').style.display = 'block';
-                        document.getElementById('editButton1').style.display = 'block';
+                        cardContainer.innerHTML = data; // Insert the HTML response directly
+                        document.getElementById('editButton').style.display = 'block'; // Show the "Add Task" button
                     } else {
-                        cardContainer.innerHTML = '';
-                        document.getElementById('noTasksMessage').style.display = 'block';
-                        document.getElementById('editButton').style.display = 'none';
-                        document.getElementById('editButton1').style.display = 'none';
+                        cardContainer.innerHTML = ''; // Clear previous data
+                        document.getElementById('noTasksMessage').style.display = 'block'; // Show no tasks message
+                        document.getElementById('editButton').style.display = 'none'; // Hide the "Add Task" button
                     }
                 })
                 .catch(error => {
-                    document.getElementById('loading').style.display = 'none';
-                    console.error('Error:', error);
-                    showMessagePopup('Error fetching tasks.');
+                    console.error('Error fetching tasks:', error);
+                    document.getElementById('loading').innerHTML = 'Error loading tasks. Please try again later.';
                 });
         }
 
-        function handleAddTask(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const apiUrl = event.target.action;
-
-            fetch(apiUrl, {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                showMessagePopup(data.message || 'Task added successfully!');
-                closePopup('addPopup');
-                fetchTasksForEmployee(employeeId);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessagePopup('Error adding task.');
-            });
-        }
-
-        function removeTask(rowNumber) {
-            const url = 'https://your-remove-api-endpoint'; 
-            const data = {
-                rowNumber: rowNumber
-            };
-
-            fetch(url, {
-                method: 'DELETE',
-                body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                closePopup('removePopup');
-                showMessagePopup(data.message || 'Task removed successfully!'); // Display response message in popup
-                fetchTasksForEmployee(employeeId);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessagePopup('Error removing task.');
-            });
-        }
-
-        function showMessagePopup(message) {
-            document.getElementById('messageContent').innerText = message;
-            document.getElementById('messagePopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
-
-        function closePopup(popupId) {
-            document.getElementById(popupId).style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        function closeOverlay() {
-            closePopup('addPopup');
-            closePopup('removePopup');
-            closePopup('messagePopup');
-        }
-
-        function showAddPopup() {
-            document.getElementById('addPopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
-
-        function showRemovePopup() {
-            document.getElementById('removePopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
+        function showEditPopup() {
+            alert('Add Task functionality coming soon!');
         }
     </script>
+
 </body>
 </html>
