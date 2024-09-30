@@ -288,7 +288,7 @@ function populatePopupTable() {
         popupTaskList.appendChild(clonedRow);
     });
 }
-function removeTask(employeeName, TaskDescription) {
+function removeTask(employeeName, taskDescription) {
     const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
 
     fetch(apiUrl, {
@@ -296,7 +296,7 @@ function removeTask(employeeName, TaskDescription) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ employeeName, taskDescription })
+        body: JSON.stringify({ employeeName, taskDescription })  // Sending employeeName and taskDescription
     })
     .then(response => response.json())
     .then(data => {
@@ -305,14 +305,20 @@ function removeTask(employeeName, TaskDescription) {
             fetchDataFromLambda(); // Refresh the data after task removal
             closePopup('removePopup');
         } else {
-            alert('Error removing task: ' + data.error);
+            // Check if there is an error message and display it
+            if (data.error) {
+                alert('Error removing task: ' + data.error);
+            } else {
+                alert('Error removing task: An unexpected error occurred.');
+            }
         }
     })
     .catch(error => {
         console.error('Error removing task:', error);
-        alert('Error removing task');
+        alert('Error removing task: ' + error.message);
     });
 }
+
 
     </script>
 </body>
