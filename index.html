@@ -289,21 +289,17 @@ function populatePopupTable() {
     });
 }
 function removeTask(employeeName, taskDescription) {
-    // Log values to verify
-    console.log("Employee Name:", employeeName);
-    console.log("Task Description:", taskDescription);
+    console.log("Sending Employee Name:", employeeName);
+    console.log("Sending Task Description:", taskDescription);
     
     const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Lambda API Gateway URL
-
-    // Send as plain text (URL-encoded format)
-    const body = `employeeName=${encodeURIComponent(employeeName)}&taskDescription=${encodeURIComponent(taskDescription)}`;
 
     fetch(apiUrl, {
         method: 'DELETE',
         headers: {
-            'Content-Type': 'text/plain',  // Sending plain text
+            'Content-Type': 'application/json',
         },
-        body: body  // Send the plain text body
+        body: JSON.stringify({ employeeName, taskDescription })
     })
     .then(response => {
         if (!response.ok) {
@@ -327,6 +323,7 @@ function removeTask(employeeName, taskDescription) {
         alert('Error removing task');
     });
 }
+
 </script>
 </body>
 </html>
