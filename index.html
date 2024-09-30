@@ -101,62 +101,79 @@
         }
     </style>
 </head>
-<body onload="onLoadFunction()">
+<body>
     <header>
         <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
     </header>
-     <h1 style="text-align: center;">Ramita Task List</h1>
-    <div id="cardContainer">
-            <!-- Task cards from Lambda will be inserted here -->
+
+    <div class="container">
+        <h1>Employee Task List</h1>
+
+        <div id="loading">Loading tasks...</div>
+
+        <div id="cardContainer"></div> <!-- This will display the HTML table returned from API -->
+
+        <div id="noTasksMessage">
+            No tasks found for the Employee ID.
         </div>
 
-    <br>
-    <button class="button" onclick="showAddPopup()">Add Task</button>
-    <button class="button" onclick="showRemovePopup()">Remove Task</button>
+        <div id="buttonContainer" style="display: flex;  margin-top: 20px;">
+            <button id="editButton" class="button" style="margin-right: 10px;" onclick="showAddPopup()">Add Task</button>
+            <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
+        </div>
 
-    <!-- Popup for adding tasks -->
-    <div id="addPopup" class="popup">
-        <h3>Add New Task</h3>
-        <form id="taskForm" action="https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3" method="POST" enctype="application/x-www-form-urlencoded">
-            <label for="employeeName">Employee Name:</label>
-            <input type="text" id="employeeName" name="eName" value="Ramita" required><br><br>
+        <!-- Popup for adding tasks -->
+        <div id="addPopup" class="popup">
+            <h3>Add New Task</h3>
+            <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
+                <label for="employeeid">Employee ID:</label>
+                <input type="text" id="employeeID" name="eID" required><br><br>
 
-            <label for="taskDescription">Task:</label>
-            <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
+                <label for="employeeName">Employee Name:</label>
+                <input type="text" id="employeeName" name="eName" required><br><br>
 
-            <label for="StartDate">Start Date:</label>
-            <input type="date" id="StartDate" name="StartDate"><br><br>
+                <label for="taskDescription">Task:</label>
+                <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
 
-            <label for="EndDate">End Date:</label>
-            <input type="date" id="EndDate" name="EndDate"><br><br>
+                <label for="StartDate">Start Date:</label>
+                <input type="date" id="StartDate" name="StartDate"><br><br>
 
-            <label for="Remarks">Remarks:</label>
-            <input type="text" id="Remarks" name="Remarks"><br><br>
+                <label for="EndDate">End Date:</label>
+                <input type="date" id="EndDate" name="EndDate"><br><br>
 
-            <button class="button" type="submit">Add</button>
-            <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
-        </form>
-    </div>
+                <button class="button" type="submit">Add</button>
+                <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
+            </form>
+        </div>
 
-    <!-- Popup for removing tasks -->
-    <div id="removePopup" class="popup">
-        <h3>Remove Task</h3>
-        <table id="popupTable">
-            <thead></thead>
-            <tbody id="popupTaskList">
-                <!-- Tasks will be populated here -->
-            </tbody>
-        </table>
-        <button class="button" onclick="closePopup('removePopup')">Close</button>
-    </div>
+        <!-- Popup for removing tasks -->
+        <div id="removePopup" class="popup">
+            <h3>Remove Task</h3>
+            <table id="popupTable">
+                <thead>
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                    <th>Task Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Rating</th>
+                    <th>Remark</th>
+                </thead>
+                <tbody id="popupTaskList">
+                    <!-- Tasks will be populated here -->
+                </tbody>
+            </table>
+            <button class="button" onclick="closePopup('removePopup')">Close</button>
+        </div>
 
-    <!-- Overlay for popup -->
-    <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
+        <!-- Overlay for popup -->
+        <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
 
-    <!-- Success message popup -->
-    <div id="messagePopup" class="popup">
-        <p id="messageContent"></p>
-        <button class="button" onclick="closePopup('messagePopup')">Close</button>
+        <!-- Success message popup -->
+        <div id="messagePopup" class="popup">
+            <p id="messageContent"></p>
+            <button class="button" onclick="closePopup('messagePopup')">Close</button>
+        </div>
     </div>
 
 
