@@ -155,7 +155,6 @@
                 <th>End Date</th>
                 <th>Rating</th>
                 <th>Remark</th>
-                <th>Action</th> <!-- Add an Action column for remove buttons -->
             </tr>
         </thead>
         <tbody id="popupTaskList">
@@ -271,25 +270,20 @@
 
     popupTaskList.innerHTML = '';
 
-    // Clone and add the header row
-    const headerRow = tableBody.closest('table').querySelector('thead').cloneNode(true);
-    const popupTableHead = document.querySelector('#popupTable thead');
-    popupTableHead.innerHTML = ''; // Clear existing headers
-    popupTableHead.appendChild(headerRow);
-
-    // Clone each row in the task table
     const rows = tableBody.querySelectorAll('tr');
     rows.forEach((row, index) => {
         const clonedRow = row.cloneNode(true);
         const removeButtonCell = document.createElement('td');
 
-        // Add a remove button for every row
-        removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index + 1})">X</button>`;
+        // Skip the remove button for the first row
+        if (index !== 0) {
+            removeButtonCell.innerHTML = <button class="button" onclick="removeTask(${index + 1})">X</button>;
+        }
+
         clonedRow.appendChild(removeButtonCell);
         popupTaskList.appendChild(clonedRow);
     });
 }
-
         function removeTask(rowNumber) {
             const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
 
