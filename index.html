@@ -14,7 +14,7 @@
         }
 
         .logo {
-            height: 120px; /* Adjust the height as needed */
+            height: 120px;
             margin-right: 20px;
         }
         body {
@@ -144,7 +144,7 @@
         </form>
     </div>
         
-            <!-- Popup for removing tasks -->
+    <!-- Popup for removing tasks -->
     <div id="removePopup" class="popup">
         <h3>Remove Task</h3>
         <table id="popupTable">
@@ -172,141 +172,120 @@
         <p id="messageContent"></p>
         <button class="button" onclick="closePopup('messagePopup')">Close</button>
     </div>
-   <script>
-        // Hardcoded employee ID, you can replace this value or dynamically set it
-        const employeeId = '10005315'; // Replace with the employee ID you want to load by default
 
-        // Automatically fetch tasks when the page loads
+   <script>
+        const employeeId = '10005315'; 
+
         window.onload = function() {
             fetchTasksForEmployee(employeeId);
         };
 
         function fetchTasksForEmployee(employeeId) {
-            const apiUrl = https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)};
-            document.getElementById('loading').style.display = 'block'; // Show loading message
+            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
+            document.getElementById('loading').style.display = 'block'; 
 
             fetch(apiUrl)
-                .then(response => response.text()) // We expect HTML, so use .text()
+                .then(response => response.text()) 
                 .then(data => {
-                    document.getElementById('loading').style.display = 'none'; // Hide loading message
+                    document.getElementById('loading').style.display = 'none'; 
                     const cardContainer = document.getElementById('cardContainer');
                     
                     if (data.trim() !== '') {
-                        cardContainer.innerHTML = data; // Insert the HTML response directly
-                        document.getElementById('editButton').style.display = 'block'; // Show the "Add Task" button
-                        document.getElementById('editButton1').style.display = 'block'; // Show the "Remove Task" button
+                        cardContainer.innerHTML = data;
+                        document.getElementById('editButton').style.display = 'block'; 
+                        document.getElementById('editButton1').style.display = 'block';
                     } else {
-                        cardContainer.innerHTML = ''; // Clear previous data
-                        document.getElementById('noTasksMessage').style.display = 'block'; // Show no tasks message
-                        document.getElementById('editButton').style.display = 'none'; // Hide the "Add Task" button
-                        document.getElementById('editButton1').style.display = 'none'; // Hide the "Remove Task" button
+                        cardContainer.innerHTML = ''; 
+                        document.getElementById('noTasksMessage').style.display = 'block'; 
+                        document.getElementById('editButton').style.display = 'none'; 
+                        document.getElementById('editButton1').style.display = 'none'; 
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching tasks:', error);
-                    document.getElementById('loading').innerHTML = 'Error loading tasks. Please try again later.';
+                    document.getElementById('loading').style.display = 'none'; 
+                    console.error('Error:', error);
+                    document.getElementById('noTasksMessage').style.display = 'block'; 
                 });
         }
 
-              function showAddPopup() {
+        function removeTask(rowNumber) {
+            const url = 'https://your-remove-api-endpoint'; 
+            const data = {
+                rowNumber: rowNumber
+            };
+
+            fetch(url, {
+                method: 'DELETE', 
+                body: JSON.stringify(data), 
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                closePopup('removePopup');
+                showMessagePopup('Task removed successfully!');
+                fetchTasksForEmployee(employeeId);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessagePopup('Error removing task.');
+            });
+        }
+
+        function showMessagePopup(message) {
+            const messagePopup = document.getElementById('messagePopup');
+            document.getElementById('messageContent').textContent = message;
+            messagePopup.style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup(popupId) {
+            document.getElementById(popupId).style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function closeOverlay() {
+            const activePopups = document.querySelectorAll('.popup');
+            activePopups.forEach(popup => popup.style.display = 'none');
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function showAddPopup() {
             document.getElementById('addPopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
 
-       function showRemovePopup() {
-    populatePopupTable(); // Call this to populate tasks
-    document.getElementById('removePopup').style.display = 'block';
-    document.getElementById('overlay').style.display = 'block';
-}
-
-
-        function closePopup(popupId) {
-            document.getElementById(popupId).style.display = 'none';
-            closeOverlay();
+        function showRemovePopup() {
+            document.getElementById('removePopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            populatePopupTable(); 
         }
-
-        function closeOverlay() {
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        document.getElementById('taskForm').onsubmit = async function(event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            const form = event.target;
-            const formData = new FormData(form);
-            const params = new URLSearchParams(formData).toString();
-
-            try {
-                const response = await fetch(form.action, {
-                    method: form.method,
-                    headers: {
-                        'Content-Type': form.enctype
-                    },
-                    body: params
-                });
-
-                const result = await response.json();
-                document.getElementById('messageContent').innerText = result.message;
-                document.getElementById('messagePopup').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-
-                closePopup('addPopup'); // Close the add task popup
-            } catch (error) {
-                document.getElementById('messageContent').innerText = 'Error: ' + error.message;
-                document.getElementById('messagePopup').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }
-        };
 
         function populatePopupTable() {
-    const tableBody = document.querySelector('#cardContainer table tbody');
-    const popupTaskList = document.getElementById('popupTaskList');
+            const popupTaskList = document.getElementById('popupTaskList');
+            const taskRows = document.querySelectorAll('#cardContainer tr'); 
 
-    if (!tableBody) {
-        console.error('Table body not found.');
-        return;
-    }
+            popupTaskList.innerHTML = ''; 
 
-    popupTaskList.innerHTML = '';
+            taskRows.forEach((row, index) => {
+                const taskCells = row.querySelectorAll('td');
+                if (taskCells.length === 7) {
+                    const popupRow = document.createElement('tr');
+                    
+                    taskCells.forEach(cell => {
+                        const popupCell = document.createElement('td');
+                        popupCell.textContent = cell.textContent;
+                        popupRow.appendChild(popupCell);
+                    });
 
-    const rows = tableBody.querySelectorAll('tr');
-    rows.forEach((row, index) => {
-        const clonedRow = row.cloneNode(true);
-        const removeButtonCell = document.createElement('td');
+                    const removeButtonCell = document.createElement('td');
+                    removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index + 1})">X</button>`;
+                    popupRow.appendChild(removeButtonCell);
 
-        // Skip the remove button for the first row
-        if (index !== 0) {
-            removeButtonCell.innerHTML = <button class="button" onclick="removeTask(${index + 1})">X</button>;
-        }
-
-        clonedRow.appendChild(removeButtonCell);
-        popupTaskList.appendChild(clonedRow);
-    });
-}
-
-        function removeTask(rowNumber) {
-            const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
-
-            fetch(apiUrl, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ rowNumber })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Task removed successfully');
-                    fetchDataFromLambda(); // Refresh the data after task removal
-                    closePopup('removePopup');
-                } else {
-                    alert('Error removing task: ' + data.error);
+                    popupTaskList.appendChild(popupRow);
                 }
-            })
-            .catch(error => {
-                console.error('Error removing task:', error);
-                alert('Error removing task');
             });
         }
     </script>
