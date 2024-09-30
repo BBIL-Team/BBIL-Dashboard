@@ -289,6 +289,9 @@ function populatePopupTable() {
     });
 }
 function removeTask(employeeName, taskDescription) {
+    console.log("Employee Name:", employeeName);  // Debugging logs
+    console.log("Task Description:", taskDescription);  // Debugging logs
+    
     const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
 
     fetch(apiUrl, {
@@ -320,6 +323,7 @@ function removeTask(employeeName, taskDescription) {
         alert('Error removing task');
     });
 }
+
 </script>
 </body>
 </html>
