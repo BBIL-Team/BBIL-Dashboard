@@ -205,10 +205,12 @@
             document.getElementById('overlay').style.display = 'block';
         }
 
-        function showRemovePopup() {
-            document.getElementById('removePopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
+       function showRemovePopup() {
+    populatePopupTable(); // Call this to populate tasks
+    document.getElementById('removePopup').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+}
+
 
         function closePopup(popupId) {
             document.getElementById(popupId).style.display = 'none';
