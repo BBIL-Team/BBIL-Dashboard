@@ -70,7 +70,7 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        /* Popup styles */
+    /* Popup styles */
         .popup {
             display: none;
             position: fixed;
@@ -114,21 +114,22 @@
         <div id="noTasksMessage">
             No tasks found for the Employee ID.
         </div>
+
         <div id="buttonContainer" style="display: flex;  margin-top: 20px;">
             <button id="editButton" class="button" style="margin-right: 10px;" onclick="showAddPopup()">Add Task</button>
             <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
         </div>
-
-            <!-- Popup for adding tasks -->
+    
+        <!-- Popup for adding tasks -->
     <div id="addPopup" class="popup">
         <h3>Add New Task</h3>
-        <form id="taskForm" action="https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3" method="POST" enctype="application/x-www-form-urlencoded">
-            <label for="employeeID">Employee ID:</label>
+        <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
+            <label for="employeeid">Employee ID:</label>
             <input type="text" id="employeeID" name="eID" required><br><br>
 
             <label for="employeeName">Employee Name:</label>
             <input type="text" id="employeeName" name="eName" required><br><br>
-            
+
             <label for="taskDescription">Task:</label>
             <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
 
@@ -138,16 +139,32 @@
             <label for="EndDate">End Date:</label>
             <input type="date" id="EndDate" name="EndDate"><br><br>
 
-            <label for="Remarks">Remarks:</label>
-            <input type="text" id="Remarks" name="Remarks"><br><br>
-
             <button class="button" type="submit">Add</button>
             <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
         </form>
     </div>
+        
+            <!-- Popup for removing tasks -->
+    <div id="removePopup" class="popup">
+        <h3>Remove Task</h3>
+        <table id="popupTable">
+            <thead></thead>
+            <tbody id="popupTaskList">
+                <!-- Tasks will be populated here -->
+            </tbody>
+        </table>
+        <button class="button" onclick="closePopup('removePopup')">Close</button>
+    </div>
 
+    <!-- Overlay for popup -->
+    <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
 
-    <script>
+    <!-- Success message popup -->
+    <div id="messagePopup" class="popup">
+        <p id="messageContent"></p>
+        <button class="button" onclick="closePopup('messagePopup')">Close</button>
+    </div>
+   <script>
         // Hardcoded employee ID, you can replace this value or dynamically set it
         const employeeId = '10005315'; // Replace with the employee ID you want to load by default
 
@@ -157,7 +174,7 @@
         };
 
         function fetchTasksForEmployee(employeeId) {
-            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
+            const apiUrl = https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)};
             document.getElementById('loading').style.display = 'block'; // Show loading message
 
             fetch(apiUrl)
@@ -169,10 +186,12 @@
                     if (data.trim() !== '') {
                         cardContainer.innerHTML = data; // Insert the HTML response directly
                         document.getElementById('editButton').style.display = 'block'; // Show the "Add Task" button
+                        document.getElementById('editButton1').style.display = 'block'; // Show the "Remove Task" button
                     } else {
                         cardContainer.innerHTML = ''; // Clear previous data
                         document.getElementById('noTasksMessage').style.display = 'block'; // Show no tasks message
                         document.getElementById('editButton').style.display = 'none'; // Hide the "Add Task" button
+                        document.getElementById('editButton1').style.display = 'none'; // Hide the "Remove Task" button
                     }
                 })
                 .catch(error => {
@@ -181,11 +200,107 @@
                 });
         }
 
-          function showAddPopup() {
+              function showAddPopup() {
             document.getElementById('addPopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
+
+        function showRemovePopup() {
+            document.getElementById('removePopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closePopup(popupId) {
+            document.getElementById(popupId).style.display = 'none';
+            closeOverlay();
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        document.getElementById('taskForm').onsubmit = async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData).toString();
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    headers: {
+                        'Content-Type': form.enctype
+                    },
+                    body: params
+                });
+
+                const result = await response.json();
+                document.getElementById('messageContent').innerText = result.message;
+                document.getElementById('messagePopup').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+
+                closePopup('addPopup'); // Close the add task popup
+            } catch (error) {
+                document.getElementById('messageContent').innerText = 'Error: ' + error.message;
+                document.getElementById('messagePopup').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
+        };
+
+        function populatePopupTable() {
+    const tableBody = document.querySelector('#cardContainer table tbody');
+    const popupTaskList = document.getElementById('popupTaskList');
+
+    if (!tableBody) {
+        console.error('Table body not found.');
+        return;
+    }
+
+    popupTaskList.innerHTML = '';
+
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const clonedRow = row.cloneNode(true);
+        const removeButtonCell = document.createElement('td');
+
+        // Skip the remove button for the first row
+        if (index !== 0) {
+            removeButtonCell.innerHTML = <button class="button" onclick="removeTask(${index + 1})">X</button>;
+        }
+
+        clonedRow.appendChild(removeButtonCell);
+        popupTaskList.appendChild(clonedRow);
+    });
+}
+
+        function removeTask(rowNumber) {
+            const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
+
+            fetch(apiUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rowNumber })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Task removed successfully');
+                    fetchDataFromLambda(); // Refresh the data after task removal
+                    closePopup('removePopup');
+                } else {
+                    alert('Error removing task: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error removing task:', error);
+                alert('Error removing task');
+            });
+        }
     </script>
 
+
 </body>
-</html>
+</html> 
