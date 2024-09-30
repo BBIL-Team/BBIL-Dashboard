@@ -295,12 +295,15 @@ function removeTask(employeeName, taskDescription) {
     
     const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Lambda API Gateway URL
 
+    // Send as plain text (URL-encoded format)
+    const body = `employeeName=${encodeURIComponent(employeeName)}&taskDescription=${encodeURIComponent(taskDescription)}`;
+
     fetch(apiUrl, {
         method: 'DELETE',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/plain',  // Sending plain text
         },
-        body: JSON.stringify({ employeeName, taskDescription })  // Ensure the correct structure
+        body: body  // Send the plain text body
     })
     .then(response => {
         if (!response.ok) {
