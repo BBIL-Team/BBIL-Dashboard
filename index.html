@@ -174,7 +174,7 @@
         };
 
         function fetchTasksForEmployee(employeeId) {
-            const apiUrl = https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)};
+            const apiUrl = 'https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}';
             document.getElementById('loading').style.display = 'block'; // Show loading message
 
             fetch(apiUrl)
