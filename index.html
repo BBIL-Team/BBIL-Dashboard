@@ -193,8 +193,19 @@
             document.getElementById('addPopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
+        function closePopup(popupId) {
+            document.getElementById(popupId).style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
 
-
+        function closePopups() {
+            closePopup('addPopup');
+            closePopup('successPopup');
+        }
+        function showSuccessPopup() {
+            document.getElementById('successPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        } 
         function showRemovePopup() {
             alert('Remove Task functionality coming soon!');
         }
