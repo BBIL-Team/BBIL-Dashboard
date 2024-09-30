@@ -298,29 +298,29 @@ function removeTask(employeeName, taskDescription) {
         },
         body: JSON.stringify({ employeeName, taskDescription })  // Sending employeeName and taskDescription
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || 'Unknown error');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             alert('Task removed successfully');
             fetchDataFromLambda(); // Refresh the data after task removal
             closePopup('removePopup');
         } else {
-            // Check if there is an error message and display it
-            if (data.error) {
-                alert('Error removing task: ' + data.error);
-            } else {
-                alert('Error removing task: An unexpected error occurred.');
-            }
+            alert('Error removing task: ' + data.error);
         }
     })
     .catch(error => {
         console.error('Error removing task:', error);
-        alert('Error removing task: ' + error.message);
+        alert('Error removing task');
     });
 }
-
-
-    </script>
+</script>
 </body>
 </html>
    
