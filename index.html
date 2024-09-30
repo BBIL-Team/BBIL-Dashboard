@@ -143,12 +143,11 @@
             <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
         </form>
     </div>
-        
-            <!-- Popup for removing tasks -->
-    <div id="removePopup" class="popup">
-        <h3>Remove Task</h3>
-        <table id="popupTable">
-            <thead>
+        <div id="removePopup" class="popup">
+    <h3>Remove Task</h3>
+    <table id="popupTable">
+        <thead>
+            <tr>
                 <th>Employee ID</th>
                 <th>Employee Name</th>
                 <th>Task Description</th>
@@ -156,13 +155,16 @@
                 <th>End Date</th>
                 <th>Rating</th>
                 <th>Remark</th>
-            </thead>
-            <tbody id="popupTaskList">
-                <!-- Tasks will be populated here -->
-            </tbody>
-        </table>
-        <button class="button" onclick="closePopup('removePopup')">Close</button>
-    </div>
+                <th>Action</th> <!-- Add an Action column for remove buttons -->
+            </tr>
+        </thead>
+        <tbody id="popupTaskList">
+            <!-- Tasks will be populated here -->
+        </tbody>
+    </table>
+    <button class="button" onclick="closePopup('removePopup')">Close</button>
+</div>
+
 
     <!-- Overlay for popup -->
     <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
