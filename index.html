@@ -258,27 +258,58 @@
             }
         };
 
-        function populatePopupTable() {
-            const taskList = JSON.parse(localStorage.getItem('taskList')) || []; // Simulating fetching tasks
-            const popupTaskList = document.getElementById('popupTaskList');
-            popupTaskList.innerHTML = ''; // Clear previous content
+          function populatePopupTable() {
+    const tableBody = document.querySelector('#cardContainer table tbody');
+    const popupTaskList = document.getElementById('popupTaskList');
 
-            if (taskList.length === 0) {
-                const noTasksRow = document.createElement('tr');
-                noTasksRow.innerHTML = '<td colspan="3">No tasks available</td>';
-                popupTaskList.appendChild(noTasksRow);
-            } else {
-                taskList.forEach((task, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><input type="checkbox" class="removeTask" data-index="${index}"></td>
-                        <td>${task.description}</td>
-                        <td>${task.date}</td>
-                    `;
-                    popupTaskList.appendChild(row);
-                });
-            }
+    if (!tableBody) {
+        console.error('Table body not found.');
+        return;
+    }
+
+    popupTaskList.innerHTML = '';
+
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const clonedRow = row.cloneNode(true);
+        const removeButtonCell = document.createElement('td');
+
+        // Skip the remove button for the first row
+        if (index !== 0) {
+            removeButtonCell.innerHTML = <button class="button" onclick="removeTask(${index + 1})">X</button>;
+        }
+
+        clonedRow.appendChild(removeButtonCell);
+        popupTaskList.appendChild(clonedRow);
+    });
+}
+
+        function removeTask(rowNumber) {
+            const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';  // Replace with your actual Lambda API Gateway URL
+
+            fetch(apiUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rowNumber })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Task removed successfully');
+                    fetchDataFromLambda(); // Refresh the data after task removal
+                    closePopup('removePopup');
+                } else {
+                    alert('Error removing task: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error removing task:', error);
+                alert('Error removing task');
+            });
         }
     </script>
 </body>
 </html>
+   
