@@ -265,7 +265,7 @@
                 document.getElementById('messagePopup').style.display = 'block';
             }
         };
-function populatePopupTable() {
+  function populatePopupTable() {
     const tableBody = document.querySelector('#cardContainer table tbody');
     const popupTaskList = document.getElementById('popupTaskList');
 
@@ -276,20 +276,16 @@ function populatePopupTable() {
 
     popupTaskList.innerHTML = '';
 
-    // Clone and add the header row
-    const headerRow = tableBody.closest('table').querySelector('thead').cloneNode(true);
-    const popupTableHead = document.querySelector('#popupTable thead');
-    popupTableHead.innerHTML = ''; // Clear existing headers
-    popupTableHead.appendChild(headerRow);
-
-    // Clone each row in the task table
     const rows = tableBody.querySelectorAll('tr');
     rows.forEach((row, index) => {
         const clonedRow = row.cloneNode(true);
         const removeButtonCell = document.createElement('td');
 
-        // Add a remove button for every row
-        removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index + 1})">X</button>`;
+        // Skip the remove button for the first row
+        if (index !== 0) {
+            removeButtonCell.innerHTML = '<button class="button" onclick="removeTask(${index + 1})">X</button>';
+        }
+
         clonedRow.appendChild(removeButtonCell);
         popupTaskList.appendChild(clonedRow);
     });
