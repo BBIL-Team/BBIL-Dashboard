@@ -87,8 +87,10 @@
         <div id="noTasksMessage">
             No tasks found for the Employee ID.
         </div>
-        <button id="editButton" style="display:none;" onclick="showEditPopup()">Add Task</button>
-    </div>
+        <div id="buttonContainer" style="display: flex;  margin-top: 20px;">
+            <button id="editButton" class="button" style="margin-right: 10px;" onclick="showAddPopup()">Add Task</button>
+            <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
+        </div>
 
     <script>
         // Hardcoded employee ID, you can replace this value or dynamically set it
