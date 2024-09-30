@@ -143,6 +143,15 @@
             <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
         </form>
     </div>
+         <!-- Success Message Popup -->
+        <div id="successPopup" class="popup">
+            <h3>Success!</h3>
+            <p>Data saved successfully.</p>
+            <button class="button" onclick="closePopup('successPopup')">OK</button>
+        </div>
+
+        <div class="overlay" id="overlay" onclick="closePopups()"></div>
+    </div>
 
     <script>
         // Hardcoded employee ID, you can replace this value or dynamically set it
