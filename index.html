@@ -288,11 +288,11 @@ function populatePopupTable() {
         popupTaskList.appendChild(clonedRow);
     });
 }
-const removeTask = async (employeeName, taskDescription) => {
+const removeTask = async (Employee_Name, Task_Description) => {
     const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';
     
     // Construct a plain text string with comma-separated values using backticks
-    const plainText = `${employeeName},${taskDescription}`;
+    const plainText = `${Employee_Name},${Task_Description}`;
 
     try {
         const response = await fetch(apiUrl, {
