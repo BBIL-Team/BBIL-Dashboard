@@ -288,40 +288,32 @@ function populatePopupTable() {
         popupTaskList.appendChild(clonedRow);
     });
 }
-const removeTask = async (task) => {
+function removeTask(employeeName, taskDescription) {
     const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';
     
     // Construct a plain text string with comma-separated values
-    const plainText = `${task.employeeName},${task.taskDescription}`;
+    const plainText = ${employeeName},${taskDescription};
 
-    console.log('Sending to Lambda:', plainText); // Debugging statement
-
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'text/plain',  // Indicate that you're sending plain text
-            },
-            body: plainText  // Send the plain text as the body
-        });
-
-        // Check response status
-        if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
-        }
-
-        const data = await response.json();
+    fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'text/plain',  // Indicate that you're sending plain text
+        },
+        body: plainText  // Send the plain text as the body
+    })
+    .then(response => response.json())
+    .then(data => {
         if (data.success) {
             alert('Task removed successfully');
-            fetchTasksForEmployee(employeeId); // Refresh task list
         } else {
             alert('Error: ' + data.error);
         }
-    } catch (error) {
+    })
+    .catch(error => {
         console.error('Error:', error);
         alert('Request failed');
-    }
-};
+    });
+} 
 </script>
 </body>
 </html>
