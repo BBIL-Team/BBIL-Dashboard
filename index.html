@@ -288,29 +288,32 @@ function populatePopupTable() {
         popupTaskList.appendChild(clonedRow);
     });
 }
-function removeTask() {
-    const employeeName = "John Doe";  // Example employee name
-    const taskDescription = "Example Task";  // Example task description
+function removeTask(employeeName, taskDescription) {
+    const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';
+    
+    // Construct a plain text string with comma-separated values
+    const plainText = `${employeeName},${taskDescription}`;
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("DELETE", "https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask", true);
-    xhr.setRequestHeader("Content-Type", "text/plain");
-
-    const requestBody = `${employeeName},${taskDescription}`;  // Plain text format
-    xhr.send(requestBody);
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            console.log(xhr.responseText);
-            if (xhr.status === 200) {
-                alert('Task removed successfully');
-            } else {
-                alert('Error: ' + xhr.responseText);
-            }
+    fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'text/plain',  // Indicate that you're sending plain text
+        },
+        body: plainText  // Send the plain text as the body
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Task removed successfully');
+        } else {
+            alert('Error: ' + data.error);
         }
-    };
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Request failed');
+    });
 }
-
 </script>
 </body>
 </html>
