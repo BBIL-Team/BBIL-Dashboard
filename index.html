@@ -292,7 +292,7 @@ function removeTask(employeeName, taskDescription) {
     const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';
     
     // Construct a plain text string with comma-separated values
-    const plainText = ${Employee_Name},${Task_Description};
+    const plainText =${Employee_Name},${Task_Description};
 
     fetch(apiUrl, {
         method: 'DELETE',
