@@ -3,324 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Task List</title>
+    <title>Task Table</title>
     <style>
-        header {
-            background-color: #008080;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            color: white;
-        }
-
-        .logo {
-            height: 120px; /* Adjust the height as needed */
-            margin-right: 20px;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-        }
-        h1 {
-            text-align: center;
-        }
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        #loading {
-            text-align: center;
-            display: none;
-        }
-        #cardContainer {
-            margin-top: 20px;
-        }
-        #noTasksMessage {
-            color: red;
-            text-align: center;
-            margin-top: 20px;
-            display: none;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        /* Popup styles */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ccc;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        .popup button {
-            margin-top: 10px;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
+        /* Styling the popup modal */
+        #popupModal {
+            display: none; /* Hidden by default */
+            position: fixed; 
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+        }
+
+        #popupContent {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        button {
+            padding: 5px;
         }
     </style>
-</head>
-<body>
-    <header>
-        <img src="https://www.bharatbiotech.com/images/bharat-biotech-logo.jpg" alt="Company Logo" class="logo">
-    </header>
-
-    <div class="container">
-        <h1>Employee Task List</h1>
-
-        <div id="loading">Loading tasks...</div>
-
-        <div id="cardContainer"></div> <!-- This will display the HTML table returned from API -->
-
-        <div id="noTasksMessage">
-            No tasks found for the Employee ID.
-        </div>
-
-        <div id="buttonContainer" style="display: flex; margin-top: 20px;">
-            <button id="editButton" class="button" style="margin-right: 10px;" onclick="showAddPopup()">Add Task</button>
-            <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
-        </div>
-    
-        <!-- Popup for adding tasks -->
-        <div id="addPopup" class="popup">
-            <h3>Add New Task</h3>
-            <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
-                <label for="employeeid">Employee ID:</label>
-                <input type="text" id="employeeID" name="eID" required><br><br>
-
-                <label for="employeeName">Employee Name:</label>
-                <input type="text" id="employeeName" name="eName" required><br><br>
-
-                <label for="taskDescription">Task:</label>
-                <input type="text" id="taskDescription" name="TaskDescription" required><br><br>
-
-                <label for="StartDate">Start Date:</label>
-                <input type="date" id="StartDate" name="StartDate"><br><br>
-
-                <label for="EndDate">End Date:</label>
-                <input type="date" id="EndDate" name="EndDate"><br><br>
-
-                <button class="button" type="submit">Add</button>
-                <button class="button" type="button" onclick="closePopup('addPopup')">Cancel</button>
-            </form>
-        </div>
-        
-        <!-- Popup for removing tasks -->
-        <div id="removePopup" class="popup">
-            <h3>Remove Task</h3>
-            <table id="popupTable">
-                <thead>
-                    <th>Employee ID</th>
-                    <th>Employee Name</th>
-                    <th>Task Description</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Rating</th>
-                    <th>Remarks</th>
-                </thead>
-                <tbody id="popupTaskList">
-                    <!-- Tasks will be populated here -->
-                </tbody>
-            </table>
-            <button class="button" onclick="closePopup('removePopup')">Close</button>
-        </div>
-
-        <!-- Overlay for popup -->
-        <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
-
-        <!-- Success message popup -->
-        <div id="messagePopup" class="popup">
-            <p id="messageContent"></p>
-            <button class="button" onclick="closePopup('messagePopup')">Close</button>
-        </div>
-    </div>
 
     <script>
-        // Hardcoded employee ID, you can replace this value or dynamically set it
-        const employeeId = '10005315'; // Replace with the employee ID you want to load by default
+        // Function to open the popup modal
+        function openPopup() {
+            document.getElementById('popupModal').style.display = 'block';
+        }
 
-        // Automatically fetch tasks when the page loads
-        window.onload = function() {
-            fetchTasksForEmployee(employeeId);
-        };
+        // Function to close the popup modal
+        function closePopup() {
+            document.getElementById('popupModal').style.display = 'none';
+        }
 
-        function fetchTasksForEmployee(employeeId) {
-            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
-            document.getElementById('loading').style.display = 'block'; // Show loading message
-
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.text();
+        // Function to handle removing a task
+        function removeTask(employeeName, taskDescription) {
+            const confirmRemove = confirm(`Are you sure you want to remove the task: "${taskDescription}" for employee: "${employeeName}"?`);
+            if (confirmRemove) {
+                // Make a request to the AWS Lambda to remove the task
+                fetch(' https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        employeeName: employeeName,
+                        taskDescription: taskDescription
+                    }),
                 })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Fetched data:', data); // Log the fetched data for debugging
-                    document.getElementById('loading').style.display = 'none';
-                    const cardContainer = document.getElementById('cardContainer');
-
-                    if (data.trim() !== '') {
-                        cardContainer.innerHTML = data; // Insert the HTML response directly
-                        document.getElementById('editButton').style.display = 'block';
-                        document.getElementById('editButton1').style.display = 'block';
+                    if (data.success) {
+                        alert("Task removed successfully");
+                        location.reload(); // Reload the page to reflect the changes
                     } else {
-                        cardContainer.innerHTML = '';
-                        document.getElementById('noTasksMessage').style.display = 'block';
-                        document.getElementById('editButton').style.display = 'none';
-                        document.getElementById('editButton1').style.display = 'none';
+                        alert("Failed to remove task");
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching tasks:', error);
-                    document.getElementById('loading').innerHTML = 'Error loading tasks. Please try again later.';
+                    console.error('Error:', error);
+                    alert("An error occurred while removing the task");
                 });
-        }
-
-        function showAddPopup() {
-            document.getElementById('addPopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
-
-        function showRemovePopup() {
-            populatePopupTable(); // Ensure the popup is populated before displaying
-            document.getElementById('removePopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
-
-        function closePopup(popupId) {
-            document.getElementById(popupId).style.display = 'none';
-            closeOverlay();
-        }
-
-        function closeOverlay() {
-            document.getElementById('overlay').style.display = 'none';
-        }
-
-        document.getElementById('taskForm').onsubmit = async function(event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            const form = event.target;
-            const formData = new FormData(form);
-            const params = new URLSearchParams(formData).toString();
-
-            try {
-                const response = await fetch(form.action, {
-                    method: form.method,
-                    headers: {
-                        'Content-Type': form.enctype
-                    },
-                    body: params
-                });
-
-                const result = await response.json();
-                document.getElementById('messageContent').innerText = result.message;
-                document.getElementById('messagePopup').style.display = 'block';
-                document.getElementById('addPopup').style.display = 'none';
-                closeOverlay();
-
-                // Re-fetch tasks after adding
-                fetchTasksForEmployee(employeeId);
-            } catch (error) {
-                console.error('Error adding task:', error);
-                document.getElementById('messageContent').innerText = 'Failed to add task.';
-                document.getElementById('messagePopup').style.display = 'block';
             }
-        };
-function populatePopupTable() {
-    const tableBody = document.querySelector('#cardContainer table tbody');
-    const popupTaskList = document.getElementById('popupTaskList');
-
-    if (!tableBody) {
-        console.error('Table body not found.');
-        return;
-    }
-
-    popupTaskList.innerHTML = '';
-
-    const rows = tableBody.querySelectorAll('tr');
-    rows.forEach((row, index) => {
-        const clonedRow = row.cloneNode(true);
-        const removeButtonCell = document.createElement('td');
-
-        // Add the remove button for every row
-        removeButtonCell.innerHTML = `<button class="button" onclick="removeTask(${index})">X</button>`;
-        
-        clonedRow.appendChild(removeButtonCell);
-        popupTaskList.appendChild(clonedRow);
-    });
-}
-const removeTask = async (Employee_Name, Task_Description) => {
-    const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';
-    
-    // Construct a plain text string with comma-separated values using backticks
-    const plainText = `${Employee_Name},${Task_Description}`;
-
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'text/plain',  // Indicate that you're sending plain text
-            },
-            body: plainText  // Send the plain text as the body
-        });
-
-        // Ensure the response is in the expected format
-        if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
         }
+    </script>
+</head>
+<body>
 
-        const data = await response.json();
-        if (data.success) {
-            alert('Task removed successfully');
-            // Optionally, refresh the task list here
-        } else {
-            alert('Error: ' + data.error);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Request failed');
-    }
-};
-</script>
+    <h2>Employee Task List</h2>
+
+    <!-- Button to trigger the task removal popup -->
+    <button onclick="openPopup()">Remove Task</button>
+
+    <!-- The popup modal -->
+    <div id="popupModal">
+        <div id="popupContent">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h3>Task List</h3>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Employee Name</th>
+                        <th>Task Description</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example tasks; you would generate these dynamically from your data -->
+                    <tr>
+                        <td>10005315</td>
+                        <td>Surya</td>
+                        <td>Task c</td>
+                        <td>2024-12-05</td>
+                        <td>2024-12-06</td>
+                        <td><button onclick="removeTask('John Doe', 'Task A')">❌</button></td>
+                    </tr>
+                    <tr>
+                        <td>10005315</td>
+                        <td>Surya</td>
+                        <td>Task E</td>
+                        <td>2024-06-05</td>
+                        <td>2024-07-06</td>
+                        <td><button onclick="removeTask('Jane Smith', 'Task B')">❌</button></td>
+                    </tr>
+		    <tr>
+                        <td>10005144</td>
+                        <td>Ramita</td>
+                        <td>Task A</td>
+                        <td>2024-10-10</td>
+                        <td>2024-10-11</td>
+                        <td><button onclick="removeTask('Jane Smith', 'Task B')">❌</button></td>
+                    </tr>
+		     <tr>
+                        <td>10005144</td>
+                        <td>Ramita</td>
+                        <td>Task D</td>
+                        <td>2024-04-08</td>
+                        <td>2024-04-09</td>
+                        <td><button onclick="removeTask('Jane Smith', 'Task B')">❌</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </body>
 </html>
-   
