@@ -290,37 +290,43 @@ function populatePopupTable() {
         popupTaskList.appendChild(clonedRow);
     });
 }
-const removeTask = async (employeeName, taskDescription) => {
-    const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';
-    
-    // Construct a plain text string with the employee name and task description
-    const plainText = `${employeeName},${taskDescription}`;
+  const removeTask = async (employeeName, taskDescription) => {
+            const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';
+            const plainText = `${employeeName},${taskDescription}`;
 
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'text/plain',
-            },
-            body: plainText
-        });
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'text/plain',
+                    },
+                    body: plainText
+                });
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+
+                const data = await response.json();
+                document.getElementById('messageContent').innerText = data.message || 'Task removed successfully.';
+                document.getElementById('messagePopup').style.display = 'block';
+                closePopup('removePopup'); // Close the remove task popup
+                fetchTasksForEmployee(employeeId); // Refresh task list
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('messageContent').innerText = 'Request failed: ' + error.message;
+                document.getElementById('messagePopup').style.display = 'block';
+            }
+        };
+
+        function closePopup(popupId) {
+            document.getElementById(popupId).style.display = 'none';
+            closeOverlay();
         }
 
-        const data = await response.json();
-        if (data.success) {
-            alert('Task removed successfully');
-            fetchTasksForEmployee(employeeId); // Refresh task list
-        } else {
-            alert('Error: ' + data.error);
+        function closeOverlay() {
+            document.getElementById('overlay').style.display = 'none';
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Request failed');
-    }
-};
 </script>
 </body>
 </html>
