@@ -281,19 +281,20 @@ function populatePopupTable() {
         const clonedRow = row.cloneNode(true);
         const removeButtonCell = document.createElement('td');
 
+        const employeeName = clonedRow.children[1].innerText; // Assuming employee name is in the second column
         const taskDescription = clonedRow.children[2].innerText; // Assuming task description is in the third column
 
-        removeButtonCell.innerHTML = `<button class="button" onclick="removeTask('${taskDescription}')">X</button>`;
+        removeButtonCell.innerHTML = `<button class="button" onclick="removeTask('${employeeName}', '${taskDescription}')">X</button>`;
         
         clonedRow.appendChild(removeButtonCell);
         popupTaskList.appendChild(clonedRow);
     });
 }
-const removeTask = async (taskDescription) => {
+const removeTask = async (employeeName, taskDescription) => {
     const apiUrl = 'https://oje3cr7sy2.execute-api.ap-south-1.amazonaws.com/V1/RemoveTask';
     
-    // Construct a plain text string with the task description
-    const plainText = `${taskDescription}`;
+    // Construct a plain text string with the employee name and task description
+    const plainText = `${employeeName},${taskDescription}`;
 
     try {
         const response = await fetch(apiUrl, {
