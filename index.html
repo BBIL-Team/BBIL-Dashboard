@@ -5,97 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Task List</title>
     <style>
-        header {
-            background-color: #008080;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            color: white;
-        }
-
-        .logo {
-            height: 120px; /* Adjust the height as needed */
-            margin-right: 20px;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-        }
-        h1 {
-            text-align: center;
-        }
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        #loading {
-            text-align: center;
-            display: none;
-        }
-        #cardContainer {
-            margin-top: 20px;
-        }
-        #noTasksMessage {
-            color: red;
-            text-align: center;
-            margin-top: 20px;
-            display: none;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        /* Popup styles */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ccc;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        .popup button {
-            margin-top: 10px;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
+        /* Existing styles... */
+        /* Add any additional styles as needed */
     </style>
 </head>
 <body>
@@ -108,6 +19,26 @@
 
         <div id="loading">Loading tasks...</div>
 
+        <!-- Month Selector -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <label for="monthSelect">Select Month:</label>
+            <select id="monthSelect" onchange="fetchTasksForEmployee(employeeId)">
+                <option value="">All</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+        </div>
+
         <div id="cardContainer"></div> <!-- This will display the HTML table returned from API -->
 
         <div id="noTasksMessage">
@@ -119,7 +50,7 @@
             <button id="editButton1" class="button" onclick="showRemovePopup()">Remove Task</button>
         </div>
     
-        <!-- Popup for adding tasks -->
+               <!-- Popup for adding tasks -->
         <div id="addPopup" class="popup">
             <h3>Add New Task</h3>
             <form id="taskForm" action="https://bi3hh9apo0.execute-api.ap-south-1.amazonaws.com/S1/Addtask" method="POST" enctype="application/x-www-form-urlencoded">
@@ -174,16 +105,15 @@
     </div>
 
     <script>
-        // Hardcoded employee ID, you can replace this value or dynamically set it
         const employeeId = '10005315'; // Replace with the employee ID you want to load by default
 
-        // Automatically fetch tasks when the page loads
         window.onload = function() {
             fetchTasksForEmployee(employeeId);
         };
 
         function fetchTasksForEmployee(employeeId) {
-            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}`;
+            const selectedMonth = document.getElementById('monthSelect').value;
+            const apiUrl = `https://imf44ag3d4.execute-api.ap-south-1.amazonaws.com/S1/Test5?EmployeeID=${encodeURIComponent(employeeId)}${selectedMonth ? `&Month=${selectedMonth}` : ''}`;
             document.getElementById('loading').style.display = 'block'; // Show loading message
 
             fetch(apiUrl)
@@ -194,7 +124,6 @@
                     return response.text();
                 })
                 .then(data => {
-                    console.log('Fetched data:', data); // Log the fetched data for debugging
                     document.getElementById('loading').style.display = 'none';
                     const cardContainer = document.getElementById('cardContainer');
 
@@ -215,7 +144,7 @@
                 });
         }
 
-        function showAddPopup() {
+               function showAddPopup() {
             document.getElementById('addPopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         }
@@ -330,4 +259,3 @@ function populatePopupTable() {
 </script>
 </body>
 </html>
-   
