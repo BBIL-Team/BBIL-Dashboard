@@ -238,6 +238,28 @@
         alert('Failed to update tasks: ' + error.message);
     });
 }
+// Trigger QuickSight dataset refresh
+fetch('https://bu2skwmyel.execute-api.ap-south-1.amazonaws.com/default/refresh', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action: 'refresh_dataset' }) // Example payload
+})
+.then(refreshResponse => {
+    if (!refreshResponse.ok) {
+        throw new Error('Failed to refresh QuickSight dataset');
+    }
+    return refreshResponse.json();
+})
+.then(refreshData => {
+    console.log('QuickSight refresh successful:', refreshData);
+    alert('QuickSight dataset refreshed successfully!');
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert('Failed to refresh QuickSight: ' + error.message);
+});
 
 
     function closePopup() {
