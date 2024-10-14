@@ -254,6 +254,13 @@
         alert('Failed to update tasks or refresh QuickSight: ' + error.message);
     });
 }
+    function closePopup() {
+        document.getElementById('editPopup').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+        
+        // Call the function to load and display tasks
+        loadTasks();
+    }
 
     function loadTasks() {
         const employeeID = document.getElementById('employeeID').value.trim(); // Get the current employee ID
