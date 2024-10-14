@@ -198,12 +198,11 @@
     var tasksData = [];
 
     rows.forEach(row => {
-        var employeeId = row.cells[0].innerText; // Assuming employee ID is in the first column
-        var taskDescription = row.cells[2].innerText; // Task description in the third column
+        var employeeId = row.cells[0].innerText;
+        var taskDescription = row.cells[2].innerText;
         var rate = row.querySelector('.rateInput').value.trim();
         var remarks = row.querySelector('.remarkInput').value.trim();
 
-        // Push to tasksData array if all fields are filled
         if (employeeId && taskDescription && rate && remarks) {
             tasksData.push(`${employeeId},${taskDescription},${rate},${remarks}`);
         }
@@ -214,38 +213,47 @@
         return;
     }
 
-    // Send data to Lambda
+    // Send data to update the CSV
     fetch('https://tfyct2zj8k.execute-api.ap-south-1.amazonaws.com/A1/test3', {
         method: 'POST',
         headers: {
             'Content-Type': 'text/plain'
         },
-        body: tasksData.join('\n') // Join tasks data with new lines
+        body: tasksData.join('\n')
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error('Failed to update tasks');
         }
         return response.json();
     })
     .then(data => {
-        console.log('Success:', data);
-        alert('Tasks updated successfully!');
+        console.log('Tasks updated successfully:', data);
+        
+        // Trigger QuickSight refresh
+        return fetch('https://bu2skwmyel.execute-api.ap-south-1.amazonaws.com/default/refresh', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to refresh QuickSight dataset');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('QuickSight refresh initiated:', data);
+        alert('Tasks updated and QuickSight dataset refresh initiated successfully!');
         closePopup(); // Close the popup on success
     })
-    .catch((error) => {
+    .catch(error => {
         console.error('Error:', error);
-        alert('Failed to update tasks: ' + error.message);
+        alert('Failed to update tasks or refresh QuickSight: ' + error.message);
     });
 }
-
-    function closePopup() {
-        document.getElementById('editPopup').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-        
-        // Call the function to load and display tasks
-        loadTasks();
-    }
 
     function loadTasks() {
         const employeeID = document.getElementById('employeeID').value.trim(); // Get the current employee ID
