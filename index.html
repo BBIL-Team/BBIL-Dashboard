@@ -1,16 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Upload Excel File</title>
+  <title>Upload CSV File</title>
 </head>
 <body>
 
-<form action="https://qvls5frwcc.execute-api.ap-south-1.amazonaws.com/V1/UploadLink_Anamay">
-    <br> &ensp; <h1>BBIL Production Department - Data Upload Interface</h1>
-    <br> &ensp; <B>Select a CSV file to upload:</B>
-    <input type="file" name="file" accept=".csv">
-    <br> &ensp; <br> &ensp; <input type="submit" style="background-color:black;color:white;width:150px;height:40px;" value="Upload CSV File" enctype="text/plain">
-</form>
+<h1>BBIL Production Department - Data Upload Interface</h1>
+<label><strong>Select a CSV file to upload:</strong></label>
+<input type="file" id="fileInput" accept=".csv" />
+<br><br>
+<button onclick="uploadFile()" style="background-color:black; color:white; width:150px; height:40px;">
+  Upload CSV File
+</button>
+
+<script>
+  async function uploadFile() {
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput.files.length === 0) {
+      alert("Please select a CSV file to upload.");
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64File = reader.result.split(',')[1]; // Convert to base64 and remove metadata
+
+      try {
+        const response = await fetch("https://qvls5frwcc.execute-api.ap-south-1.amazonaws.com/V1/UploadLink_Anamay", {
+          method: "POST",
+          body: JSON.stringify({ body: base64File }) // Send base64 data as JSON
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert(data.message || "File uploaded successfully!");
+        } else {
+          alert("Failed to upload file.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred while uploading the file.");
+      }
+    };
+
+    reader.readAsDataURL(file); // Read file as a Data URL
+  }
+</script>
 
 </body>
 </html>
